@@ -1,4 +1,4 @@
-name: CI/CD Pipeline + Sonar
+name: CI/CD Pipeline + SonarCloud
 
 on:
   push:
