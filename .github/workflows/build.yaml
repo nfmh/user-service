@@ -1,4 +1,4 @@
-name: CI/CD Pipeline + SonarCloud
+name: build
 
 on:
   push:
@@ -19,13 +19,14 @@ jobs:
           java-version: 17
           distribution: 'adopt'
 
-      # Add steps to build and test your application here
+      - name: Build and Test
+        run: |
+          mvn verify
 
       - name: SonarCloud Scan
-        uses: sonarsource/sonarcloud-github-action@master
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        run: mvn verify sonar:sonar \
-            -Dsonar.host.url=https://sonarcloud.io \
-            -Dsonar.organization=nfmh \
-            -Dsonar.projectKey=nfmh_user-service
+        run: mvn sonar:sonar \
+          -Dsonar.host.url=https://sonarcloud.io \
+          -Dsonar.organization=nfmh \
+          -Dsonar.projectKey=nfmh_user-service
