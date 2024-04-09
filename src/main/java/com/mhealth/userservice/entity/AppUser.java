@@ -13,7 +13,9 @@ public class AppUser {
     private String password;
 
     // Constructors
+
     public AppUser() {
+        throw new UnsupportedOperationException("Default constructor is not supported. Use parameterized constructor instead.");
     }
 
     // Getters and Setters
