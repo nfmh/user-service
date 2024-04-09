@@ -36,6 +36,9 @@ public class UserServiceImpl implements UserService {
         Optional<AppUser> optionalUser = userRepository.findById(userId);
         if (optionalUser.isPresent()) {
             AppUser user = optionalUser.get();
+            if (passwordDTO.getPassword() == null) {
+                throw new IllegalArgumentException("New password cannot be null");
+            }
             user.setPassword(passwordDTO.getPassword());
             userRepository.save(user);
             return true;

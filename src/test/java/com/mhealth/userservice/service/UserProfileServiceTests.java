@@ -10,8 +10,7 @@ import org.mockito.MockitoAnnotations;
 
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -23,8 +22,6 @@ class UserProfileServiceTests {
     @InjectMocks
     private UserProfileServiceImpl userProfileService;
 
-
-    @SuppressWarnings("resource")
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
@@ -66,11 +63,24 @@ class UserProfileServiceTests {
     }
 
     @Test
+    void testGetUserProfileById_UserProfileNotFound() {
+        // Arrange
+        long userProfileId = 1L;
+        when(userProfileRepository.findById(userProfileId)).thenReturn(Optional.empty());
+
+        // Act
+        UserProfile result = userProfileService.getUserProfileById(userProfileId);
+
+        // Assert
+        assertNull(result);
+    }
+
+    @Test
     void testUpdateUserProfile() {
         // Arrange
-        long userId = 1L; // ID of the user profile to be updated
+        long userId = 1L;
         UserProfile userProfile = createUpdatedUserProfile();
-        userProfile.setId(userId); // Set the ID for the user profile
+        userProfile.setId(userId);
         when(userProfileRepository.findById(userId)).thenReturn(Optional.of(userProfile));
         when(userProfileRepository.save(any(UserProfile.class))).thenReturn(userProfile);
 
