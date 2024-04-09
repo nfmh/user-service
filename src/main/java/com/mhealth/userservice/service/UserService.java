@@ -1,12 +1,15 @@
 package com.mhealth.userservice.service;
+
+import com.mhealth.userservice.dto.AppUserDTO;
+import com.mhealth.userservice.dto.UpdatePasswordDTO;
 import com.mhealth.userservice.entity.AppUser;
 
 import java.util.List;
 
 public interface UserService {
-    AppUser createUser(AppUser user);
+    AppUser createUser(AppUserDTO userDTO);
     AppUser getUserById(Long userId);
-    void saveUser(AppUser user);
-    void deleteUser(Long userId);
-    List<AppUser> getAllUsers(); // New method to retrieve all users
+    boolean updateUserPassword(Long userId, UpdatePasswordDTO passwordDTO);
+    boolean deleteUser(Long userId);
+    List<AppUser> getAllUsers();
 }
