@@ -1,6 +1,4 @@
 package com.mhealth.userservice.service;
-
-import com.mhealth.userservice.controller.UserController;
 import com.mhealth.userservice.dto.AppUserDTO;
 import com.mhealth.userservice.dto.UpdatePasswordDTO;
 import com.mhealth.userservice.entity.AppUser;
@@ -11,8 +9,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,8 +26,6 @@ class UserServiceTests {
 
     @InjectMocks
     private UserServiceImpl userService;
-    @InjectMocks
-    private UserController userController;
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
@@ -66,24 +61,6 @@ class UserServiceTests {
         // Assert
         assertNotNull(result);
         assertEquals(userId, result.getId());
-    }
-    void testCreateUserController() {
-        // Arrange
-        AppUserDTO userDTO = new AppUserDTO();
-        userDTO.setUsername("testUser");
-        userDTO.setEmail("test@example.com");
-        userDTO.setPassword("password");
-
-        AppUser user = new AppUser("testUser", "test@example.com", "password");
-        when(userService.createUser(userDTO)).thenReturn(user);
-
-        // Act
-        ResponseEntity<AppUser> response = userController.createUser(userDTO);
-
-        // Assert
-        assertNotNull(response);
-        assertEquals(HttpStatus.CREATED, response.getStatusCode());
-        assertEquals(user, response.getBody());
     }
     @Test
     void testCreateUser() {
