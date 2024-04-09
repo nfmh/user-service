@@ -14,8 +14,15 @@ public class AppUser {
 
     // Constructors
 
+    // Constructors
+    public AppUser(String username, String email, String password) {
+        this.username = username;
+        this.email = email;
+        this.password = password;
+    }
+
     public AppUser() {
-        throw new UnsupportedOperationException("Default constructor is not supported. Use parameterized constructor instead.");
+
     }
 
     // Getters and Setters

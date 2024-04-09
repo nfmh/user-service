@@ -35,7 +35,7 @@ class UserServiceTests {
     void testGetUserById() {
         // Arrange
         long userId = 1L;
-        AppUser user = new AppUser();
+        AppUser user = new AppUser("testUser", "test@example.com", "password");
         user.setId(userId);
         when(userRepository.findById(userId)).thenReturn(Optional.of(user));
 
@@ -55,11 +55,8 @@ class UserServiceTests {
         userDTO.setEmail("test@example.com");
         userDTO.setPassword("password");
 
-        AppUser user = new AppUser();
+        AppUser user = new AppUser("testUser", "test@example.com", "password");
         user.setId(1L);
-        user.setUsername("testUser");
-        user.setEmail("test@example.com");
-        user.setPassword("password");
 
         when(userRepository.save(any(AppUser.class))).thenReturn(user);
 
@@ -80,9 +77,8 @@ class UserServiceTests {
         UpdatePasswordDTO passwordDTO = new UpdatePasswordDTO();
         passwordDTO.setPassword("newPassword");
 
-        AppUser user = new AppUser();
+        AppUser user = new AppUser("testUser", "test@example.com", "oldPassword");
         user.setId(userId);
-        user.setPassword("oldPassword");
 
         when(userRepository.findById(userId)).thenReturn(Optional.of(user));
         when(userRepository.save(any(AppUser.class))).thenReturn(user);
@@ -99,7 +95,7 @@ class UserServiceTests {
     void testDeleteUser() {
         // Arrange
         long userId = 1L;
-        AppUser user = new AppUser();
+        AppUser user = new AppUser("testUser", "test@example.com", "password");
         user.setId(userId);
 
         when(userRepository.findById(userId)).thenReturn(Optional.of(user));
@@ -117,9 +113,9 @@ class UserServiceTests {
     void testGetAllUsers() {
         // Arrange
         List<AppUser> userList = new ArrayList<>();
-        userList.add(new AppUser());
-        userList.add(new AppUser());
-        userList.add(new AppUser());
+        userList.add(new AppUser("testUser1", "test1@example.com", "password1"));
+        userList.add(new AppUser("testUser2", "test2@example.com", "password2"));
+        userList.add(new AppUser("testUser3", "test3@example.com", "password3"));
 
         when(userRepository.findAll()).thenReturn(userList);
 
