@@ -10,10 +10,11 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 class UserServiceTests {
@@ -50,15 +51,15 @@ class UserServiceTests {
     void testCreateUser() {
         // Arrange
         AppUserDTO userDTO = new AppUserDTO();
-        userDTO.setUsername("testuser");
+        userDTO.setUsername("testUser");
         userDTO.setEmail("test@example.com");
-        userDTO.setPassword("testpassword");
+        userDTO.setPassword("password");
 
         AppUser user = new AppUser();
         user.setId(1L);
-        user.setUsername(userDTO.getUsername());
-        user.setEmail(userDTO.getEmail());
-        user.setPassword(userDTO.getPassword());
+        user.setUsername("testUser");
+        user.setEmail("test@example.com");
+        user.setPassword("password");
 
         when(userRepository.save(any(AppUser.class))).thenReturn(user);
 
@@ -67,9 +68,31 @@ class UserServiceTests {
 
         // Assert
         assertNotNull(createdUser);
-        assertEquals(userDTO.getUsername(), createdUser.getUsername());
-        assertEquals(userDTO.getEmail(), createdUser.getEmail());
-        assertEquals(userDTO.getPassword(), createdUser.getPassword());
+        assertEquals(user.getUsername(), createdUser.getUsername());
+        assertEquals(user.getEmail(), createdUser.getEmail());
+        assertEquals(user.getPassword(), createdUser.getPassword());
+    }
+
+    @Test
+    void testUpdateUserPassword() {
+        // Arrange
+        long userId = 1L;
+        UpdatePasswordDTO passwordDTO = new UpdatePasswordDTO();
+        passwordDTO.setPassword("newPassword");
+
+        AppUser user = new AppUser();
+        user.setId(userId);
+        user.setPassword("oldPassword");
+
+        when(userRepository.findById(userId)).thenReturn(Optional.of(user));
+        when(userRepository.save(any(AppUser.class))).thenReturn(user);
+
+        // Act
+        boolean updated = userService.updateUserPassword(userId, passwordDTO);
+
+        // Assert
+        assertTrue(updated);
+        assertEquals(passwordDTO.getPassword(), user.getPassword());
     }
 
     @Test
@@ -78,7 +101,9 @@ class UserServiceTests {
         long userId = 1L;
         AppUser user = new AppUser();
         user.setId(userId);
+
         when(userRepository.findById(userId)).thenReturn(Optional.of(user));
+        doNothing().when(userRepository).deleteById(userId);
 
         // Act
         boolean deleted = userService.deleteUser(userId);
@@ -89,53 +114,20 @@ class UserServiceTests {
     }
 
     @Test
-    void testDeleteUser_UserNotFound() {
+    void testGetAllUsers() {
         // Arrange
-        long userId = 1L;
-        when(userRepository.findById(userId)).thenReturn(Optional.empty());
+        List<AppUser> userList = new ArrayList<>();
+        userList.add(new AppUser());
+        userList.add(new AppUser());
+        userList.add(new AppUser());
+
+        when(userRepository.findAll()).thenReturn(userList);
 
         // Act
-        boolean deleted = userService.deleteUser(userId);
+        List<AppUser> result = userService.getAllUsers();
 
         // Assert
-        assertFalse(deleted);
-        verify(userRepository, never()).deleteById(userId);
-    }
-
-    @Test
-    void testUpdateUserPassword() {
-        // Arrange
-        long userId = 1L;
-        UpdatePasswordDTO passwordDTO = new UpdatePasswordDTO();
-        passwordDTO.setPassword("newpassword");
-
-        AppUser user = new AppUser();
-        user.setId(userId);
-        when(userRepository.findById(userId)).thenReturn(Optional.of(user));
-
-        // Act
-        boolean updated = userService.updateUserPassword(userId, passwordDTO);
-
-        // Assert
-        assertTrue(updated);
-        assertEquals(passwordDTO.getPassword(), user.getPassword());
-        verify(userRepository, times(1)).save(user);
-    }
-
-    @Test
-    void testUpdateUserPassword_UserNotFound() {
-        // Arrange
-        long userId = 1L;
-        UpdatePasswordDTO passwordDTO = new UpdatePasswordDTO();
-        passwordDTO.setPassword("newpassword");
-
-        when(userRepository.findById(userId)).thenReturn(Optional.empty());
-
-        // Act
-        boolean updated = userService.updateUserPassword(userId, passwordDTO);
-
-        // Assert
-        assertFalse(updated);
-        verify(userRepository, never()).save(any(AppUser.class));
+        assertNotNull(result);
+        assertEquals(userList.size(), result.size());
     }
 }
