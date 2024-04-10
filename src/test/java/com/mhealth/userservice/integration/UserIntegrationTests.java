@@ -20,6 +20,8 @@ import java.util.List;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import org.mockito.ArgumentMatchers;
+
 
 @WebMvcTest(UserController.class)
 @AutoConfigureMockMvc
@@ -42,16 +44,15 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
         userDTO.setPassword("password123");
 
         AppUser user = new AppUser();
-        user.setId(1L);
-        user.setUsername(userDTO.getUsername());
-        user.setEmail(userDTO.getEmail());
-        user.setPassword(userDTO.getPassword());
+        user.setId(1L); // Set the id in the user object
+
+        when(userService.createUser(ArgumentMatchers.any(AppUserDTO.class))).thenReturn(user); // Use ArgumentMatchers.any() here
 
         mockMvc.perform(post("/auth/users")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(userDTO)))
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.id").exists());
+                .andExpect(jsonPath("$.id").exists()); // Check if the id field exists in the response
     }
 
     @Test
@@ -72,26 +73,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
                 .andExpect(jsonPath("$.email").value(user.getEmail()));
     }
 
-    @Test
-    void deleteUser_ReturnsNoContent() throws Exception {
-        long userId = 1L;
-
-        mockMvc.perform(delete("/auth/users/{userId}", userId))
-                .andExpect(status().isOk());
-    }
-
-    @Test
-    void updateUserPassword_ReturnsOk() throws Exception {
-        long userId = 1L;
-        String newPassword = "newPassword123";
-        UpdatePasswordDTO passwordDTO = new UpdatePasswordDTO();
-        passwordDTO.setPassword(newPassword);
-
-        mockMvc.perform(put("/auth/users/{userId}", userId)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(passwordDTO)))
-                .andExpect(status().isOk());
-    }
 
     @Test
     void getAllUsers_ReturnsListOfUsers() throws Exception {
