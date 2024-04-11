@@ -58,6 +58,13 @@ jobs:
           IMAGE_TAG=${{ env.IMAGE_TAG }}.${{ steps.datetime.outputs.DATETIME }}
           docker build -t "${REGISTRY_NAME}/${IMAGE_NAME}:${IMAGE_TAG}" -f Dockerfile .
 
+      - name: Debug environment variables
+        run: |
+          echo "REGISTRY_NAME: $REGISTRY_NAME"
+          echo "IMAGE_NAME: $IMAGE_NAME"
+          echo "IMAGE_TAG: $IMAGE_TAG"
+
+
         # Scan the Image
       - name: Run Trivy vulnerability scanner
         uses: aquasecurity/trivy-action@master
