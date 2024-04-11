@@ -53,31 +53,27 @@ jobs:
         id: datetime
         run: echo "::set-output name=DATETIME::$(date '+%Y%m%d%H%M%S')"
 
+      # Build Docker image
       - name: Build Docker image
+        id: build-image
         run: |
-          IMAGE_TAG=${{ env.IMAGE_TAG }}.${{ steps.datetime.outputs.DATETIME }}
-          docker build -t "${REGISTRY_NAME}/${IMAGE_NAME}:${IMAGE_TAG}" -f Dockerfile .
+         IMAGE_TAG=${{ env.IMAGE_TAG }}.$(date '+%Y%m%d%H%M%S')
+         docker build -t "${REGISTRY_NAME}/${IMAGE_NAME}:${IMAGE_TAG}" -f Dockerfile .
+         echo "::set-output name=IMAGE_NAME::${REGISTRY_NAME}/${IMAGE_NAME}:${IMAGE_TAG}"
 
-      - name: Debug environment variables
-        run: |
-          echo "REGISTRY_NAME: $REGISTRY_NAME"
-          echo "IMAGE_NAME: $IMAGE_NAME"
-          echo "IMAGE_TAG: $IMAGE_TAG"
-
-
-        # Scan the Image
+        # Run Trivy vulnerability scanner
       - name: Run Trivy vulnerability scanner
         uses: aquasecurity/trivy-action@master
         continue-on-error: false
         with:
-          image-ref: "${REGISTRY_NAME}/${IMAGE_NAME}:${IMAGE_TAG}"
-          format: 'sarif'
-          output: 'trivy-results.sarif'
-
+           image-ref: ${{ steps.build-image.outputs.IMAGE_NAME }}
+           format: 'sarif'
+           output: 'trivy-results.sarif'
       - name: Upload Trivy scan results to GitHub Security tab
         uses: github/codeql-action/upload-sarif@v2
         with:
           sarif_file: 'trivy-results.sarif'
+
       # Publish the Docker Image to GCP
       - name: Push Docker image to Artifact registry
         run: |
