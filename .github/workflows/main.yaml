@@ -77,4 +77,4 @@ jobs:
       # Publish the Docker Image to GCP
       - name: Push Docker image to Artifact registry
         run: |
-          docker push "${REGISTRY_NAME}/${IMAGE_NAME}:${IMAGE_TAG}"
+          docker push "${{ steps.build-image.outputs.IMAGE_NAME }}"
