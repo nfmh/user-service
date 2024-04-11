@@ -53,8 +53,25 @@ jobs:
         id: datetime
         run: echo "::set-output name=DATETIME::$(date '+%Y%m%d%H%M%S')"
 
-      - name: Build and Push Docker image
+      - name: Build Docker image
         run: |
           IMAGE_TAG=${{ env.IMAGE_TAG }}.${{ steps.datetime.outputs.DATETIME }}
           docker build -t "${REGISTRY_NAME}/${IMAGE_NAME}:${IMAGE_TAG}" -f Dockerfile .
+
+        # Scan the Image
+      - name: Run Trivy vulnerability scanner
+        uses: aquasecurity/trivy-action@master
+        continue-on-error: false
+        with:
+          image-ref: "${REGISTRY_NAME}/${IMAGE_NAME}:${{ steps.build.outputs.IMAGE_TAG }}"
+          format: 'sarif'
+          output: 'trivy-results.sarif'
+
+      - name: Upload Trivy scan results to GitHub Security tab
+        uses: github/codeql-action/upload-sarif@v2
+        with:
+          sarif_file: 'trivy-results.sarif'
+      # Publish the Docker Image to GCP
+      - name: Push Docker image to Artifact registry
+        run: |
           docker push "${REGISTRY_NAME}/${IMAGE_NAME}:${IMAGE_TAG}"
