@@ -69,10 +69,10 @@ jobs:
            image-ref: ${{ steps.build-image.outputs.IMAGE_NAME }}
            format: 'sarif'
            output: 'trivy-results.sarif'
-      - name: Upload Trivy scan results to GitHub Security tab
-        uses: github/codeql-action/upload-sarif@v2
-        with:
-          sarif_file: 'trivy-results.sarif'
+#      - name: Upload Trivy scan results to GitHub Security tab
+#        uses: github/codeql-action/upload-sarif@v2
+#        with:
+#            sarif_file: 'trivy-results.sarif'
 
       # Publish the Docker Image to GCP
       - name: Push Docker image to Artifact registry
