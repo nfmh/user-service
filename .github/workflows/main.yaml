@@ -63,7 +63,7 @@ jobs:
         uses: aquasecurity/trivy-action@master
         continue-on-error: false
         with:
-          image-ref: "${REGISTRY_NAME}/${IMAGE_NAME}:${{ steps.build.outputs.IMAGE_TAG }}"
+          image-ref: "${REGISTRY_NAME}/${IMAGE_NAME}:${IMAGE_TAG}"
           format: 'sarif'
           output: 'trivy-results.sarif'
 
