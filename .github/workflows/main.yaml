@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main
+
 env:
   PROJECT_ID: metal-being-420005
   REGION: europe-west3
@@ -30,6 +31,9 @@ jobs:
       - name: Generate JaCoCo Coverage Report
         run: ./mvnw clean verify jacoco:report
 
+      - name: Run Maven build process
+        run: ./mvnw clean package  # or ./mvnw clean install if needed
+
       - name: Analyze with SonarCloud
         run: ./mvnw sonar:sonar -Dsonar.projectKey=nfmh_user-service -Dsonar.organization=nfmh -Dsonar.host.url=https://sonarcloud.io -Dsonar.token=$SONAR_TOKEN
         env:
@@ -38,9 +42,9 @@ jobs:
       - name: Set up Google Cloud SDK
         uses: google-github-actions/setup-gcloud@v0.2.0
         with:
-            service_account_key: ${{ secrets.GCP_SA_KEY }}
-            project_id: ${{ env.PROJECT_ID }}
-            export_default_credentials: true
+          service_account_key: ${{ secrets.GCP_SA_KEY }}
+          project_id: ${{ env.PROJECT_ID }}
+          export_default_credentials: true
 
       - name: Log in to Google Cloud Artifact Registry
         run: gcloud auth print-access-token | docker login -u oauth2accesstoken --password-stdin "europe-west3-docker.pkg.dev"
@@ -51,6 +55,6 @@ jobs:
 
       - name: Build and Push Docker image
         run: |
-                IMAGE_TAG=${{ env.IMAGE_TAG }}.${{ steps.datetime.outputs.DATETIME }}
-                docker build -t "${REGISTRY_NAME}/${IMAGE_NAME}:${IMAGE_TAG}" .
-                docker push "${REGISTRY_NAME}/${IMAGE_NAME}:${IMAGE_TAG}"
+          IMAGE_TAG=${{ env.IMAGE_TAG }}.${{ steps.datetime.outputs.DATETIME }}
+          docker build -t "${REGISTRY_NAME}/${IMAGE_NAME}:${IMAGE_TAG}" -f Dockerfile .
+          docker push "${REGISTRY_NAME}/${IMAGE_NAME}:${IMAGE_TAG}"
