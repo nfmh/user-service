@@ -3,7 +3,6 @@ package com.mhealth.userservice.integration;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mhealth.userservice.controller.UserController;
 import com.mhealth.userservice.dto.AppUserDTO;
-import com.mhealth.userservice.dto.UpdatePasswordDTO;
 import com.mhealth.userservice.entity.AppUser;
 import com.mhealth.userservice.service.UserService;
 import org.junit.jupiter.api.Test;

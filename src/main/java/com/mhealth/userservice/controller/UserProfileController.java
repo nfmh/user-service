@@ -4,6 +4,7 @@ import com.mhealth.userservice.dto.UserProfileDTO;
 import com.mhealth.userservice.dto.UserProfileUpdateDTO;
 import com.mhealth.userservice.entity.UserProfile;
 import com.mhealth.userservice.service.UserProfileService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -16,13 +17,10 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/auth/user-profiles")
+@RequiredArgsConstructor
 public class UserProfileController {
 
     private final UserProfileService userProfileService;
-
-    public UserProfileController(UserProfileService userProfileService) {
-        this.userProfileService = userProfileService;
-    }
 
     @GetMapping("/{id}")
     public ResponseEntity<UserProfileDTO> getUserProfileById(@PathVariable Long id) {

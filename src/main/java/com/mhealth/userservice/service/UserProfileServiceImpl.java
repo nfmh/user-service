@@ -2,18 +2,16 @@ package com.mhealth.userservice.service;
 
 import com.mhealth.userservice.entity.UserProfile;
 import com.mhealth.userservice.repository.UserProfileRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
 public class UserProfileServiceImpl implements UserProfileService {
 
     private final UserProfileRepository userProfileRepository;
-
-    public UserProfileServiceImpl(UserProfileRepository userProfileRepository) {
-        this.userProfileRepository = userProfileRepository;
-    }
 
     @Override
     public UserProfile createUserProfile(UserProfile userProfile) {

@@ -1,16 +1,22 @@
 package com.mhealth.userservice.entity;
+
+import lombok.Data;
+
 import jakarta.persistence.*;
 import java.util.Set;
 
 @Entity
 @Table(name = "user_profile")
+@Data
 public class UserProfile {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     @Column(name = "user_id")
     private Long userId;
+
     @Column(name = "age")
     private Integer age;
 
@@ -39,84 +45,6 @@ public class UserProfile {
     @CollectionTable(name = "user_fitness_goals")
     @Column(name = "fitness_goal")
     private Set<FitnessGoal> fitnessGoals;
-
-    public UserProfile() {
-        // Default constructor
-    }
-
-    // Getters and Setters
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public Long getUserId() {
-        return userId;
-    }
-
-    public void setUserId(Long userId) {
-        this.userId = userId;
-    }
-
-    public Integer getAge() {
-        return age;
-    }
-
-    public void setAge(Integer age) {
-        this.age = age;
-    }
-
-    public Gender getGender() {
-        return gender;
-    }
-
-    public void setGender(Gender gender) {
-        this.gender = gender;
-    }
-
-    public Double getWeight() {
-        return weight;
-    }
-
-    public void setWeight(Double weight) {
-        this.weight = weight;
-    }
-
-    public Double getHeight() {
-        return height;
-    }
-
-    public void setHeight(Double height) {
-        this.height = height;
-    }
-
-    public ActivityLevel getActivityLevel() {
-        return activityLevel;
-    }
-
-    public void setActivityLevel(ActivityLevel activityLevel) {
-        this.activityLevel = activityLevel;
-    }
-
-    public Set<DietaryPreference> getDietaryPreferences() {
-        return dietaryPreferences;
-    }
-
-    public void setDietaryPreferences(Set<DietaryPreference> dietaryPreferences) {
-        this.dietaryPreferences = dietaryPreferences;
-    }
-
-    public Set<FitnessGoal> getFitnessGoals() {
-        return fitnessGoals;
-    }
-
-    public void setFitnessGoals(Set<FitnessGoal> fitnessGoals) {
-        this.fitnessGoals = fitnessGoals;
-    }
 
     // Define enums here
 
