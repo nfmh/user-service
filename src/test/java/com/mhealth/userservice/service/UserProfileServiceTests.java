@@ -1,7 +1,9 @@
 package com.mhealth.userservice.service;
 
+import com.mhealth.userservice.entity.AppUser;
 import com.mhealth.userservice.entity.UserProfile;
 import com.mhealth.userservice.repository.UserProfileRepository;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -98,12 +100,29 @@ class UserProfileServiceTests {
     void testDeleteUserProfile() {
         // Arrange
         long userId = 1L;
+        UserProfile userProfile = new UserProfile();
+        userProfile.setId(userId);
+        when(userProfileRepository.findById(userId)).thenReturn(Optional.of(userProfile));
 
         // Act
-        userProfileService.deleteUserProfile(userId);
+        boolean deleted = userProfileService.deleteUserProfile(userId);
 
         // Assert
         verify(userProfileRepository, times(1)).deleteById(userId);
+        assert deleted;
+    }
+    @Test
+    void testDeleteUserProfile_NotFound() {
+        // Arrange
+        long userId = 1L;
+        when(userProfileRepository.findById(userId)).thenReturn(Optional.empty());
+
+        // Act
+        boolean deleted = userProfileService.deleteUserProfile(userId);
+
+        // Assert
+        verify(userProfileRepository, never()).deleteById(userId);
+        assert !deleted;
     }
 
     @Test

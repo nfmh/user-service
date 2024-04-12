@@ -65,14 +65,6 @@ jobs:
          docker build -t "${REGISTRY_NAME}/${IMAGE_NAME}:${IMAGE_TAG}" -f Dockerfile .
          echo "::set-output name=IMAGE_NAME::${REGISTRY_NAME}/${IMAGE_NAME}:${IMAGE_TAG}"
 
-        # Run Trivy vulnerability scanner
-      - name: Run Trivy vulnerability scanner
-        uses: aquasecurity/trivy-action@master
-        continue-on-error: false
-        with:
-           image-ref: ${{ steps.build-image.outputs.IMAGE_NAME }}
-           format: 'sarif'
-           output: 'trivy-results.sarif'
       - name: Run Trivy vulnerability scanner
         uses: aquasecurity/trivy-action@7b7aa264d83dc58691451798b4d117d53d21edfe
         continue-on-error: false

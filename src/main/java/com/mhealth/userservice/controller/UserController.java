@@ -7,10 +7,15 @@ import com.mhealth.userservice.service.UserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
 
 import jakarta.validation.Valid;
+
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
 
 @RestController
 @RequestMapping("/auth/users")
@@ -23,9 +28,18 @@ public class UserController {
     }
 
     @PostMapping
-    public ResponseEntity<AppUser> createUser(@Valid @RequestBody AppUserDTO userDTO) {
+    public ResponseEntity<Object> createUser(@Valid @RequestBody AppUserDTO userDTO, BindingResult result) {
+        if (result.hasErrors()) {
+            Map<String, String> errors = new HashMap<>();
+            for (FieldError error : result.getFieldErrors()) {
+                errors.put(error.getField(), error.getDefaultMessage());
+            }
+            return ResponseEntity.badRequest().body(errors);
+        }
+
+        // Proceed with creating the user if validation passes
         AppUser user = userService.createUser(userDTO);
-        return new ResponseEntity<>(user, HttpStatus.CREATED);
+        return ResponseEntity.status(HttpStatus.CREATED).body(user);
     }
 
     @GetMapping("/{userId}")

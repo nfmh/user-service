@@ -59,16 +59,24 @@ public class UserProfileServiceImpl implements UserProfileService {
         if (updatedProfile.getActivityLevel() != null) {
             existingProfile.setActivityLevel(updatedProfile.getActivityLevel());
         }
-        if (updatedProfile.getDietaryPreferences() != null) {
+        // Only update dietaryPreferences if the field is not null and not empty in the updated profile
+        if (updatedProfile.getDietaryPreferences() != null && !updatedProfile.getDietaryPreferences().isEmpty()) {
             existingProfile.setDietaryPreferences(updatedProfile.getDietaryPreferences());
         }
-        if (updatedProfile.getFitnessGoals() != null) {
+        // Only update fitnessGoals if the field is not null and not empty in the updated profile
+        if (updatedProfile.getFitnessGoals() != null && !updatedProfile.getFitnessGoals().isEmpty()) {
             existingProfile.setFitnessGoals(updatedProfile.getFitnessGoals());
         }
     }
 
+
     @Override
-    public void deleteUserProfile(Long userProfileId) {
-        userProfileRepository.deleteById(userProfileId);
+    public boolean deleteUserProfile(Long userProfileId) {
+        Optional<UserProfile> userProfileOptional = userProfileRepository.findById(userProfileId);
+        if (userProfileOptional.isPresent()) {
+            userProfileRepository.deleteById(userProfileId);
+            return true;
+        }
+        return false;
     }
 }

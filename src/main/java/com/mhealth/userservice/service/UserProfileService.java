@@ -6,5 +6,5 @@ public interface UserProfileService {
     UserProfile createUserProfile(UserProfile userProfile);
     UserProfile getUserProfileById(Long userProfileId);
     UserProfile updateUserProfile(UserProfile userProfile);
-    void deleteUserProfile(Long userProfileId);
+    boolean deleteUserProfile(Long userProfileId);
 }

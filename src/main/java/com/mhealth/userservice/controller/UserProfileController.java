@@ -49,8 +49,9 @@ public class UserProfileController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteUserProfile(@PathVariable Long id) {
-        userProfileService.deleteUserProfile(id);
-        return ResponseEntity.ok("User profile deleted successfully");
+
+        boolean deleted =  userProfileService.deleteUserProfile(id);
+        return deleted ? ResponseEntity.ok("User deleted successfully") : ResponseEntity.notFound().build();
     }
 
     private UserProfileDTO convertToDTO(UserProfile userProfile) {
