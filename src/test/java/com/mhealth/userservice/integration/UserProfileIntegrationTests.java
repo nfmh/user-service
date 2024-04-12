@@ -1,26 +1,25 @@
 package com.mhealth.userservice.integration;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.mhealth.userservice.controller.UserProfileController;
 import com.mhealth.userservice.dto.UserProfileDTO;
 import com.mhealth.userservice.entity.UserProfile;
 import com.mhealth.userservice.service.UserProfileService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.test.web.servlet.MockMvc;
-
 
 import java.util.Set;
 
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@SpringBootTest
+@WebMvcTest(UserProfileController.class)
 @AutoConfigureMockMvc
  class UserProfileIntegrationTests {
 
@@ -55,5 +54,4 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
                         .content(objectMapper.writeValueAsString(userProfileDTO)))
                 .andExpect(status().isCreated());
     }
-
 }
