@@ -14,6 +14,10 @@ env:
 
 jobs:
   build:
+    permissions:
+      contents: read # for actions/checkout to fetch code
+      security-events: write # for github/codeql-action/upload-sarif to upload SARIF results
+      actions: read
     runs-on: ubuntu-latest
 
     steps:
@@ -69,12 +73,22 @@ jobs:
            image-ref: ${{ steps.build-image.outputs.IMAGE_NAME }}
            format: 'sarif'
            output: 'trivy-results.sarif'
-#      - name: Upload Trivy scan results to GitHub Security tab
-#        uses: github/codeql-action/upload-sarif@v2
-#        with:
-#            sarif_file: 'trivy-results.sarif'
+      - name: Run Trivy vulnerability scanner
+        uses: aquasecurity/trivy-action@7b7aa264d83dc58691451798b4d117d53d21edfe
+        continue-on-error: false
+        with:
+          image-ref: '${{ steps.build-image.outputs.IMAGE_NAME }}'
+          format: 'template'
+          template: '@/contrib/sarif.tpl'
+          output: 'trivy-results.sarif'
+
+      - name: Upload Trivy scan results to GitHub Security tab
+        uses: github/codeql-action/upload-sarif@v2
+        with:
+          sarif_file: 'trivy-results.sarif'
 
       # Publish the Docker Image to GCP
       - name: Push Docker image to Artifact registry
         run: |
           docker push "${{ steps.build-image.outputs.IMAGE_NAME }}"
+
