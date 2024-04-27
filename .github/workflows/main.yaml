@@ -31,9 +31,9 @@ jobs:
         with:
           java-version: 17
           distribution: 'adopt'
-
-      - name: Generate JaCoCo Coverage Report
-        run: ./mvnw clean verify jacoco:report
+#
+#      - name: Generate JaCoCo Coverage Report
+#        run: ./mvnw clean verify jacoco:report
 
       - name: Run Maven build process
         run: ./mvnw clean package  # or ./mvnw clean install if needed
