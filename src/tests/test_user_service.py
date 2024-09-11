@@ -1,5 +1,6 @@
 import pytest
 from app.user_service import app
+import os
 
 @pytest.fixture
 def client():

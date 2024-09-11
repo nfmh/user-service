@@ -30,8 +30,7 @@ class User(db.Model):
 with app.app_context():
     db.create_all()
 
-@app.route('/register', methods=['POST'])
-@csrf.exempt
+@app.route('/register', methods=['POST'])s
 def register():
     data = request.get_json()
     existing_user = User.query.filter_by(username=data['username']).first()
@@ -46,7 +45,6 @@ def register():
     return jsonify(message="User registered"), 201
 
 @app.route('/login', methods=['POST'])
-@csrf.exempt
 def login():
     data = request.get_json()
     user = User.query.filter_by(username=data['username']).first()
@@ -57,7 +55,6 @@ def login():
     return jsonify(message="Invalid credentials"), 401
 
 @app.route('/profile', methods=['GET'])
-@csrf.exempt
 @jwt_required()
 def profile():
     current_user = get_jwt_identity()
