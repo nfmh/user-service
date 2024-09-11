@@ -27,7 +27,9 @@ db = SQLAlchemy(app)
 if os.getenv('FLASK_ENV') == 'production':
     CORS(app, resources={r"/*": {"origins": "https://your-frontend-domain.com"}})  # Replace with your actual frontend domain
 else:
-    CORS(app, resources={r"/*": {"origins": "*"}})
+    # In testing/development environments, restrict CORS more than a wildcard
+    allowed_origins = os.getenv('ALLOWED_ORIGINS', '*')
+    CORS(app, resources={r"/*": {"origins": allowed_origins}})
 
 # Initialize the database
 with app.app_context():

@@ -27,6 +27,8 @@ jobs:
         echo "TEST_USER_PASSWORD=test123" >> $GITHUB_ENV
         echo "FLASK_ENV=testing" >> $GITHUB_ENV
         echo "PYTHONPATH=$GITHUB_WORKSPACE/src" >> $GITHUB_ENV  # Ensure PYTHONPATH is set correctly
+        echo "ALLOWED_ORIGINS=http://localhost:3000" >> $GITHUB_ENV
+
 
     - name: Install Dependencies (Flask, SQLAlchemy, JWT, bcrypt, CORS, pytest, pytest-cov, Flask-WTF)
       run: |
