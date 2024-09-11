@@ -24,7 +24,7 @@ jobs:
       run: |
         echo "DATABASE_URL=sqlite:///:memory:" >> $GITHUB_ENV
         echo "JWT_SECRET_KEY=my-secret-key" >> $GITHUB_ENV
-        echo "TEST_USER_PASSWORD=myapp123" >> $GITHUB_ENV
+        echo "TEST_USER_PASSWORD=test123" >> $GITHUB_ENV
         echo "FLASK_ENV=testing" >> $GITHUB_ENV  # Set environment to testing
 
     - name: Install Dependencies (Flask, SQLAlchemy, JWT, bcrypt, CORS, pytest, pytest-cov, Flask-WTF)
