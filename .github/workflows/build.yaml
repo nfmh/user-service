@@ -25,7 +25,7 @@ jobs:
         echo "DATABASE_URL=sqlite:///:memory:" >> $GITHUB_ENV
         echo "JWT_SECRET_KEY=my-secret-key" >> $GITHUB_ENV
         echo "TEST_USER_PASSWORD=test123" >> $GITHUB_ENV
-        echo "FLASK_ENV=testing" >> $GITHUB_ENV  # Set environment to testing
+        echo "FLASK_ENV=testing" >> $GITHUB_ENV
         echo "PYTHONPATH=$GITHUB_WORKSPACE/src" >> $GITHUB_ENV  # Add PYTHONPATH
 
     - name: Install Dependencies (Flask, SQLAlchemy, JWT, bcrypt, CORS, pytest, pytest-cov, Flask-WTF)
@@ -49,7 +49,7 @@ jobs:
         args: >
           -Dsonar.projectKey=nfmh_user-service
           -Dsonar.organization=nfmh
-          -Dsonar.sources=src/app  # Sources folder
-          -Dsonar.python.coverage.reportPaths=coverage-reports/coverage.xml  # Correct path for coverage
-          -Dsonar.tests=src/tests  # Add test directory
+          -Dsonar.sources=src/app
+          -Dsonar.python.coverage.reportPaths=coverage-reports/coverage.xml
+          -Dsonar.tests=src/tests
           -Dsonar.sourceEncoding=UTF-8
