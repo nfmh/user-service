@@ -20,9 +20,9 @@ jobs:
       with:
         python-version: '3.x'
 
-    - name: Install Dependencies (Flask, SQLAlchemy, JWT, bcrypt, CORS, pytest, pytest-cov)
+    - name: Install Dependencies (Flask, SQLAlchemy, JWT, bcrypt, CORS, pytest, pytest-cov, Flask-WTF)
       run: |
-        pip install Flask flask_sqlalchemy flask_jwt_extended SQLAlchemy bcrypt flask_cors bandit pytest pytest-cov
+        pip install Flask flask_sqlalchemy flask_jwt_extended bcrypt flask_cors flask_wtf bandit pytest pytest-cov
 
     # Step 1: Run Bandit Security Check (excluding test files)
     - name: Run Bandit Security Check
