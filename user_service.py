@@ -3,14 +3,22 @@ from flask_jwt_extended import JWTManager, create_access_token, jwt_required, ge
 from flask_sqlalchemy import SQLAlchemy
 import bcrypt
 from flask_cors import CORS
+import os
+from flask_wtf.csrf import CSRFProtect
+
 
 app = Flask(__name__)
-app.config['JWT_SECRET_KEY'] = 'my-signed-key'  # Change this in production
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:mysecretpassword@localhost:5432/userdb'
+
+csrf = CSRFProtect()
+csrf.init_app(app)
+
+app.config['JWT_SECRET_KEY'] = os.getenv('JWT_SECRET_KEY')  
+app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 jwt = JWTManager(app)
 db = SQLAlchemy(app)
 CORS(app)
+
 
 # Database Model
 class User(db.Model):
@@ -23,6 +31,7 @@ with app.app_context():
     db.create_all()
 
 @app.route('/register', methods=['POST'])
+@csrf.exempt
 def register():
     data = request.get_json()
     existing_user = User.query.filter_by(username=data['username']).first()
@@ -37,6 +46,7 @@ def register():
     return jsonify(message="User registered"), 201
 
 @app.route('/login', methods=['POST'])
+@csrf.exempt
 def login():
     data = request.get_json()
     user = User.query.filter_by(username=data['username']).first()
@@ -47,6 +57,7 @@ def login():
     return jsonify(message="Invalid credentials"), 401
 
 @app.route('/profile', methods=['GET'])
+@csrf.exempt
 @jwt_required()
 def profile():
     current_user = get_jwt_identity()

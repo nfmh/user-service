@@ -20,15 +20,19 @@ jobs:
       with:
         python-version: '3.x'
 
-    - name: Install Dependencies (Flask, SQLAlchemy, JWT, bcrypt, CORS)
+    - name: Install Dependencies (Flask, SQLAlchemy, JWT, bcrypt, CORS, pytest)
       run: |
-        pip install Flask flask_jwt_extended SQLAlchemy bcrypt flask_cors bandit
+        pip install Flask flask_jwt_extended SQLAlchemy bcrypt flask_cors bandit pytest
 
-    # Step 1: Run Bandit
+    # Step 1: Run Bandit Security Check (excluding test files)
     - name: Run Bandit Security Check
-      run: bandit -r user_service.py
+      run: bandit -r user_service.py -x user_service_tests.py
 
-    # Step 2: Run SonarCloud Scan
+    # Step 2: Run Unit Tests
+    - name: Run Unit Tests
+      run: pytest
+
+    # Step 3: Run SonarCloud Scan
     - name: SonarCloud Scan
       uses: SonarSource/sonarcloud-github-action@master
       env:
