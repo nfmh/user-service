@@ -10,12 +10,12 @@ app = Flask(__name__)
 
 csrf = CSRFProtect()
 
-# Check if the app is running in test mode to disable CSRF
-if not app.config['TESTING']:
+# Disable CSRF if the app is in testing mode
+if not app.config.get('TESTING', False):
     csrf.init_app(app)
 
 app.config['JWT_SECRET_KEY'] = os.getenv('JWT_SECRET_KEY', 'test-secret')  # Default secret for testing
-app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL', 'sqlite:///:memory:')  # Default to in-memory DB for tests
+app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL', 'sqlite:///:memory:')  # In-memory DB for testing
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['TESTING'] = os.getenv('FLASK_ENV') == 'testing'  # Disable CSRF when testing
 jwt = JWTManager(app)
@@ -44,7 +44,7 @@ def register():
 def login():
     data = request.get_json()
     user = User.query.filter_by(username=data['username']).first()
-    
+
     if user and bcrypt.checkpw(data['password'].encode('utf-8'), user.password.encode('utf-8')):
         token = create_access_token(identity={'username': user.username})
         return jsonify(token=token)

@@ -5,7 +5,7 @@ import os
 @pytest.fixture
 def client():
     # Enable testing mode and disable CSRF protection
-    app.config['TESTING'] = True  # To ensure CSRF is disabled
+    app.config['TESTING'] = True  # To ensure CSRF is disabled in tests
     with app.test_client() as client:
         yield client
 
