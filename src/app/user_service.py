@@ -6,25 +6,21 @@ from flask_cors import CORS
 import os
 from flask_wtf.csrf import CSRFProtect
 
-
 app = Flask(__name__)
 
 csrf = CSRFProtect()
-csrf.init_app(app)
 
-app.config['JWT_SECRET_KEY'] = os.getenv('JWT_SECRET_KEY')
-app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL')
+# Check if the app is running in test mode to disable CSRF
+if not app.config['TESTING']:
+    csrf.init_app(app)
+
+app.config['JWT_SECRET_KEY'] = os.getenv('JWT_SECRET_KEY', 'test-secret')  # Default secret for testing
+app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL', 'sqlite:///:memory:')  # Default to in-memory DB for tests
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+app.config['TESTING'] = os.getenv('FLASK_ENV') == 'testing'  # Disable CSRF when testing
 jwt = JWTManager(app)
 db = SQLAlchemy(app)
 CORS(app)
-
-
-# Database Model
-class User(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(80), unique=True, nullable=False)
-    password = db.Column(db.String(255), nullable=False)  # Increased length for hashed passwords
 
 # Initialize the database
 with app.app_context():
