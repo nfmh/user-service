@@ -1,5 +1,5 @@
 import pytest
-from app.user_service import app
+from app.user_service import app, db  # Import db from the user_service module
 import os
 
 @pytest.fixture
@@ -11,7 +11,7 @@ def client():
     
     # Create the tables in the test database
     with app.app_context():
-        db.create_all()
+        db.create_all()  # Create the database tables
     
     with app.test_client() as client:
         yield client
@@ -19,7 +19,6 @@ def client():
     # Drop the tables after the tests
     with app.app_context():
         db.drop_all()
-
 
 def test_register(client):
     response = client.post('/register', json={'username': 'john', 'password': os.getenv('TEST_USER_PASSWORD', 'test123')})
