@@ -2,7 +2,7 @@ import pytest
 import sys
 sys.path.append(".")
 
-from app.user_service import app, db  # Update the import path
+from src.app.user_service import app, db  # Update the import path
 import os
 
 @pytest.fixture
