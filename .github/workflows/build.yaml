@@ -1,0 +1,46 @@
+name: Build Pipeline
+
+on:
+  push:
+    branches:
+      - main
+      - 'feature/**'
+
+jobs:
+  bandit_scan:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.x'
+
+    - name: Install Bandit
+      run: pip install bandit
+
+    - name: Run Bandit Security Check
+      run: bandit -r user-service/
+
+  sonar_scan:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.x'
+
+    - name: SonarCloud Scan
+      uses: SonarSource/sonarcloud-github-action@v1.7
+      env:
+        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }} 
+      with:
+        args: >
+          -Dsonar.projectKey=nfmh_user-service
+          -Dsonar.organization=nfmh
+          -Dsonar.python.version=3.x
