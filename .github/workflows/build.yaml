@@ -26,7 +26,7 @@ jobs:
         echo "JWT_SECRET_KEY=my-secret-key" >> $GITHUB_ENV
         echo "TEST_USER_PASSWORD=test123" >> $GITHUB_ENV
         echo "FLASK_ENV=testing" >> $GITHUB_ENV
-        echo "export PYTHONPATH=\$PYTHONPATH:$(pwd)" >> $GITHUB_ENV
+        echo "PYTHONPATH=$GITHUB_WORKSPACE/src" >> $GITHUB_ENV  # Properly set the Python path
 
     - name: Install Dependencies (Flask, SQLAlchemy, JWT, bcrypt, CORS, pytest, pytest-cov, Flask-WTF)
       run: |
@@ -39,7 +39,7 @@ jobs:
     # Step 2: Run Unit Tests with Coverage
     - name: Run Unit Tests with Coverage
       run: |
-        pytest --cov=src --cov-report=html:coverage-reports/htmlcov --cov-report=xml:coverage-reports/coverage.xml
+        pytest --cov=src --cov-report=xml:coverage-reports/coverage.xml --cov-report=html:coverage-reports/htmlcov
 
     # Step 3: Upload Coverage to SonarCloud
     - name: SonarCloud Scan
@@ -53,4 +53,5 @@ jobs:
           -Dsonar.sources=src/app
           -Dsonar.tests=src/tests
           -Dsonar.python.coverage.reportPaths=coverage-reports/coverage.xml
+          -Dsonar.sourceEncoding=UTF-8
           -Dsonar.python.version=3.x

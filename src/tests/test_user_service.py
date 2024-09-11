@@ -1,8 +1,8 @@
 import pytest
 import sys
-sys.path.append(".")
+sys.path.append("src")  
 
-from src.app.user_service import app, db  # Update the import path
+from app.user_service import app, db  # Update the import path
 import os
 
 @pytest.fixture
