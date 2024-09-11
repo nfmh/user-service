@@ -1,8 +1,9 @@
 import pytest
-from src.app.user_service import app, db  # Update the import path
-import os
 import sys
 sys.path.append(".")
+
+from app.user_service import app, db  # Update the import path
+import os
 
 @pytest.fixture
 def client():
