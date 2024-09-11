@@ -22,7 +22,12 @@ if not app.config['TESTING']:
 
 jwt = JWTManager(app)
 db = SQLAlchemy(app)
-CORS(app)
+
+# Set different CORS policies based on environment
+if os.getenv('FLASK_ENV') == 'production':
+    CORS(app, resources={r"/*": {"origins": "https://your-frontend-domain.com"}})  # Replace with your actual frontend domain
+else:
+    CORS(app, resources={r"/*": {"origins": "*"}})
 
 # Initialize the database
 with app.app_context():
