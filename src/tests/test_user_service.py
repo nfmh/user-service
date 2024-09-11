@@ -1,5 +1,5 @@
 import pytest
-from app.user_service import app, db  # Import db from the user_service module
+from user_service import app, db  # Import db from the user_service module
 import os
 
 @pytest.fixture
