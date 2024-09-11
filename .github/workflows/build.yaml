@@ -51,5 +51,5 @@ jobs:
           -Dsonar.projectKey=nfmh_user-service
           -Dsonar.organization=nfmh
           -Dsonar.sources=src
-          -Dsonar.python.coverage.reportPaths=coverage.xml
+          -Dsonar.python.coverage.reportPaths=coverage-reports/coverage.xml
           -Dsonar.python.version=3.x
