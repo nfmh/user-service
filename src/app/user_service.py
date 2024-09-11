@@ -30,7 +30,7 @@ class User(db.Model):
 with app.app_context():
     db.create_all()
 
-@app.route('/register', methods=['POST'])s
+@app.route('/register', methods=['POST'])
 def register():
     data = request.get_json()
     existing_user = User.query.filter_by(username=data['username']).first()
