@@ -11,8 +11,9 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v2
+    - uses: actions/checkout@v3
+      with:
+        fetch-depth: 0
 
     - name: Set up Python
       uses: actions/setup-python@v2
@@ -29,7 +30,7 @@ jobs:
 
     # Step 2: Run SonarCloud Scan
     - name: SonarCloud Scan
-      uses: SonarSource/sonarcloud-github-action@v1.7
+      uses: SonarSource/sonarcloud-github-action@master
       env:
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }} 
       with:
