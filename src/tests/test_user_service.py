@@ -6,7 +6,7 @@ import os
 def client():
     # Enable testing mode and explicitly disable CSRF protection for the test cases
     app.config['TESTING'] = True
-    app.config['WTF_CSRF_ENABLED'] = False  # nosec: CSRF disabled only for testing environment
+    app.config['WTF_CSRF_ENABLED'] = False 
     app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL', 'sqlite:///:memory:')  # In-memory DB for testing
     
     # Create the tables in the test database
