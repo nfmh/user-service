@@ -49,6 +49,9 @@ jobs:
         args: >
           -Dsonar.projectKey=nfmh_user-service
           -Dsonar.organization=nfmh
-          -Dsonar.python.version=3.x
           -Dsonar.sources=src/app
           -Dsonar.python.coverage.reportPaths=coverage-reports/coverage.xml
+          -Dsonar.python.coveragePlugin=python
+          -Dsonar.tests=src/tests  # Add test sources directory if needed
+          -Dsonar.sourceEncoding=UTF-8
+
