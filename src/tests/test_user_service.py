@@ -7,11 +7,11 @@ def client():
         yield client
 
 def test_register(client):
-    response = client.post('/register', json={'username': 'john', 'password': 'myapp123'})
+    response = client.post('/register', json={'username': 'john', 'password': os.getenv('TEST_USER_PASSWORD', 'myapp123')})  # nosec
     assert response.status_code == 201
 
 def test_login(client):
-    client.post('/register', json={'username': 'john', 'password': 'myapp123'})
-    response = client.post('/login', json={'username': 'john', 'password': 'myapp123'})
+    client.post('/register', json={'username': 'john', 'password': os.getenv('TEST_USER_PASSWORD', 'myapp123')})  # nosec
+    response = client.post('/login', json={'username': 'john', 'password': os.getenv('TEST_USER_PASSWORD', 'myapp123')})  # nosec
     assert response.status_code == 200
     assert 'token' in response.json
