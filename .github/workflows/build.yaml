@@ -20,6 +20,11 @@ jobs:
       with:
         python-version: '3.x'
 
+    - name: Set environment variables
+      run: |
+        echo "DATABASE_URL=sqlite:///:memory:" >> $GITHUB_ENV
+        echo "JWT_SECRET_KEY=my-secret-key" >> $GITHUB_ENV
+
     - name: Install Dependencies (Flask, SQLAlchemy, JWT, bcrypt, CORS, pytest, pytest-cov, Flask-WTF)
       run: |
         pip install Flask flask_sqlalchemy flask_jwt_extended bcrypt flask_cors flask_wtf bandit pytest pytest-cov
@@ -28,9 +33,9 @@ jobs:
     - name: Run Bandit Security Check
       run: bandit -r user_service.py -x user_service_tests.py
 
-    # Step 2: Run Unit Tests with Coverage
+    # Step 2: Run Unit Tests with Coverage (Generate Cobertura Format)
     - name: Run Unit Tests with Coverage
-      run: pytest --cov=user_service --cov-report xml user_service_tests.py
+      run: pytest --cov=user_service --cov-report xml:coverage.xml --cov-report term --cov-report=html --cov-report=cobertura
 
     # Step 3: Upload Coverage to SonarCloud
     - name: SonarCloud Scan
@@ -42,4 +47,4 @@ jobs:
           -Dsonar.projectKey=nfmh_user-service
           -Dsonar.organization=nfmh
           -Dsonar.python.version=3.x
-          -Dsonar.coverageReportPaths=coverage.xml
+          -Dsonar.coverageReportPaths=cobertura.xml
