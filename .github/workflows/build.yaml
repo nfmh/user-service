@@ -25,6 +25,11 @@ jobs:
       run: |
         pip install Flask flask_sqlalchemy flask_jwt_extended bcrypt flask_cors flask_wtf bandit pytest pytest-cov python-dotenv
 
+     # Set PYTHONPATH to ensure the app module can be found
+    - name: Set PYTHONPATH
+      run: |
+        echo "PYTHONPATH=$GITHUB_WORKSPACE/src" >> $GITHUB_ENV
+        
     # Load environment variables from .env file
     - name: Load .env file
       run: |
