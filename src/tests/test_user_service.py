@@ -1,6 +1,7 @@
 import pytest
 import os
 from app import create_app, db
+from app.models import User  # Import the User model
 from dotenv import load_dotenv
 
 @pytest.fixture
