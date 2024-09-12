@@ -30,3 +30,9 @@ def login():
         set_access_cookies(response, access_token)
         return response
     return jsonify(message="Invalid credentials"), 401
+
+@user_service_blueprint.route('/profile', methods=['GET'])
+@jwt_required()
+def profile():
+    current_user = get_jwt_identity()
+    return jsonify(logged_in_as=current_user), 200
