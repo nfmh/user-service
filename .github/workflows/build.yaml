@@ -7,7 +7,7 @@ on:
       - 'feature/**'
 
 jobs:
-  sast_pipeline:
+  build_pipeline:
     runs-on: ubuntu-latest
 
     steps:
