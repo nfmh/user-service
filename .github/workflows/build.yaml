@@ -54,3 +54,15 @@ jobs:
           -Dsonar.tests=src/tests
           -Dsonar.python.coverage.reportPaths=coverage-reports/coverage.xml
           -Dsonar.python.version=3.x
+    
+    # Docker build step
+    - name: Build Docker image
+      run: docker build -t user-service:vulnerable .
+
+    # Trivy scan step
+    - name: Run Trivy vulnerability scan
+      uses: aquasecurity/trivy-action@master
+      with:
+        image-ref: user-service:vulnerable
+        format: 'table'
+        severity: 'HIGH,CRITICAL'
