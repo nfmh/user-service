@@ -16,6 +16,9 @@ RUN apt-get update && apt-get install -y --no-install-recommends gcc libpq-dev \
 # Copy the current directory contents into the container
 COPY . /user-service
 
+# Install the latest setuptools to resolve the vulnerability
+RUN pip install --upgrade pip setuptools==70.0.0
+
 # Install latest secure dependencies
 RUN pip install --no-cache-dir Flask==2.3.3 SQLAlchemy==2.0.21
 
