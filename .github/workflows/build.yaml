@@ -18,16 +18,18 @@ jobs:
     - name: Set up Python
       uses: actions/setup-python@v4
       with:
-        python-version: '3.x'
+        python-version: '3.12'
 
-    - name: Set environment variables
+    # Load environment variables from .env file
+    - name: Load .env file
       run: |
-        echo "DATABASE_URL=sqlite:///:memory:" >> $GITHUB_ENV
-        echo "JWT_SECRET_KEY=my-secret-key" >> $GITHUB_ENV
-        echo "TEST_USER_PASSWORD=test123" >> $GITHUB_ENV
-        echo "FLASK_ENV=testing" >> $GITHUB_ENV
+        if [ -f .env ]; then
+          export $(cat .env | grep -v '^#' | xargs)
+        fi
+
+    - name: Set PYTHONPATH
+      run: |
         echo "PYTHONPATH=$GITHUB_WORKSPACE/src" >> $GITHUB_ENV  # Ensure PYTHONPATH is set correctly
-        echo "ALLOWED_ORIGINS=http://localhost:3000" >> $GITHUB_ENV
 
     - name: Install Dependencies (Flask, SQLAlchemy, JWT, bcrypt, CORS, pytest, pytest-cov, Flask-WTF)
       run: |
@@ -36,7 +38,7 @@ jobs:
     # Step 1: Run Unit Tests with Coverage
     - name: Run Unit Tests with Coverage
       run: |
-        pytest --cov=src/app --cov-report=xml:coverage-reports/coverage.xml --cov-report=html:coverage-reports/htmlcov
+        pytest --cov=src/app --cov=src/services --cov-report=xml:coverage-reports/coverage.xml --cov-report=html:coverage-reports/htmlcov
         # Post-process the coverage report to fix paths
         sed -i 's|/home/runner/work/user-service/user-service/||g' coverage-reports/coverage.xml  # Remove absolute paths
 
@@ -49,20 +51,20 @@ jobs:
         args: >
           -Dsonar.projectKey=nfmh_user-service
           -Dsonar.organization=nfmh
-          -Dsonar.sources=src/app  
+          -Dsonar.sources=src/app,src/services  # Include /services path in SonarCloud scan
           -Dsonar.tests=src/tests
           -Dsonar.python.coverage.reportPaths=coverage-reports/coverage.xml
-          -Dsonar.python.version=3.x
+          -Dsonar.python.version=3.12
     
     # Docker build step
     - name: Build Docker image
-      run: docker build -t user-service:vulnerable .
+      run: docker build -t user-service:1.0 .
 
     # Trivy scan step
     - name: Run Trivy vulnerability scan
       uses: aquasecurity/trivy-action@master
       with:
-        image-ref: user-service:vulnerable
+        image-ref: user-service:1.0
         format: 'table'
         severity: 'HIGH,CRITICAL'
         exit-code: '1'  # Trivy will fail the build with code 1 if vulnerabilities are found
