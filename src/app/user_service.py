@@ -1,7 +1,7 @@
 from flask import Blueprint, request, jsonify, make_response
 from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity, set_access_cookies, unset_jwt_cookies
 from services.user_service import find_user_by_username, create_user  # Import the service functions
-from app import db
+import bcrypt
 
 user_service_blueprint = Blueprint('user_service', __name__)
 

@@ -20,20 +20,17 @@ jobs:
       with:
         python-version: '3.12'
 
+    # Install Dependencies (including python-dotenv)
+    - name: Install Dependencies (Flask, SQLAlchemy, JWT, bcrypt, CORS, pytest, pytest-cov, Flask-WTF, python-dotenv)
+      run: |
+        pip install Flask flask_sqlalchemy flask_jwt_extended bcrypt flask_cors flask_wtf bandit pytest pytest-cov python-dotenv
+
     # Load environment variables from .env file
     - name: Load .env file
       run: |
         if [ -f .env ]; then
           export $(cat .env | grep -v '^#' | xargs)
         fi
-
-    - name: Set PYTHONPATH
-      run: |
-        echo "PYTHONPATH=$GITHUB_WORKSPACE/src" >> $GITHUB_ENV  # Ensure PYTHONPATH is set correctly
-
-    - name: Install Dependencies (Flask, SQLAlchemy, JWT, bcrypt, CORS, pytest, pytest-cov, Flask-WTF)
-      run: |
-        pip install Flask flask_sqlalchemy flask_jwt_extended bcrypt flask_cors flask_wtf bandit pytest pytest-cov
 
     # Step 1: Run Unit Tests with Coverage
     - name: Run Unit Tests with Coverage
@@ -51,7 +48,7 @@ jobs:
         args: >
           -Dsonar.projectKey=nfmh_user-service
           -Dsonar.organization=nfmh
-          -Dsonar.sources=src/app,src/services
+          -Dsonar.sources=src/app,src/services  # Include /services path in SonarCloud scan
           -Dsonar.tests=src/tests
           -Dsonar.python.coverage.reportPaths=coverage-reports/coverage.xml
           -Dsonar.python.version=3.12

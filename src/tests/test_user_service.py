@@ -1,14 +1,16 @@
 import pytest
 import os
 from app import create_app, db
+from dotenv import load_dotenv
 
 @pytest.fixture
 def client():
     # Load environment variables from .env file
-    if os.path.exists(".env"):
-        from dotenv import load_dotenv
-        load_dotenv(".env")
+    load_dotenv(".env")
     
+    # Create the Flask app
+    app = create_app()
+
     # Enable testing mode and explicitly disable CSRF protection for the test cases
     app.config['TESTING'] = True
     app.config['WTF_CSRF_ENABLED'] = False 
@@ -69,4 +71,4 @@ def test_invalid_login(client):
     
     # Attempt to login with wrong password
     response = client.post('/login', json={'username': 'john', 'password': 'wrongpassword'})
-    assert response.status
+    assert response.status_code == 401  # Invalid credentials

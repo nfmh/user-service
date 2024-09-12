@@ -13,6 +13,11 @@ csrf = CSRFProtect()
 def create_app():
     app = Flask(__name__)
 
+    # Load environment variables early
+    from dotenv import load_dotenv
+    load_dotenv()
+
+    # Application configurations
     app.config['JWT_SECRET_KEY'] = os.getenv('JWT_SECRET_KEY')  
     app.config['JWT_TOKEN_LOCATION'] = ['cookies']
     app.config['JWT_COOKIE_CSRF_PROTECT'] = True
@@ -30,13 +35,14 @@ def create_app():
     db.init_app(app)
     jwt.init_app(app)
     
+    # CORS setup
     if os.getenv('FLASK_ENV') == 'production':
         CORS(app, resources={r"/*": {"origins": "https://my-frontend-domain.com"}})
     else:
         allowed_origins = os.getenv('ALLOWED_ORIGINS', '*')
         CORS(app, resources={r"/*": {"origins": allowed_origins}})
-    
-    # Register routes (import the blueprint later)
+
+    # Register blueprints
     from app.user_service import user_service_blueprint
     app.register_blueprint(user_service_blueprint)
 
