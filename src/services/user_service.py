@@ -1,5 +1,3 @@
-# src/services/user_service.py
-
 from app import db
 from app.models import User
 import bcrypt

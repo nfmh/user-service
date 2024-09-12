@@ -51,7 +51,7 @@ jobs:
         args: >
           -Dsonar.projectKey=nfmh_user-service
           -Dsonar.organization=nfmh
-          -Dsonar.sources=src/app,src/services  # Include /services path in SonarCloud scan
+          -Dsonar.sources=src/app,src/services
           -Dsonar.tests=src/tests
           -Dsonar.python.coverage.reportPaths=coverage-reports/coverage.xml
           -Dsonar.python.version=3.12
