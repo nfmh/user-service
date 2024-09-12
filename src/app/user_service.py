@@ -1,5 +1,5 @@
-from flask import Flask, request, jsonify
-from flask_jwt_extended import JWTManager, create_access_token, jwt_required, get_jwt_identity
+from flask import Flask, request, jsonify, make_response
+from flask_jwt_extended import JWTManager, create_access_token, jwt_required, get_jwt_identity, set_access_cookies, unset_jwt_cookies
 from flask_sqlalchemy import SQLAlchemy
 import bcrypt
 from flask_cors import CORS
@@ -12,6 +12,12 @@ app = Flask(__name__)
 csrf = CSRFProtect()
 
 app.config['JWT_SECRET_KEY'] = os.getenv('JWT_SECRET_KEY', 'test-secret')  # Default secret for testing
+app.config['JWT_TOKEN_LOCATION'] = ['cookies']  # Store JWTs in cookies
+app.config['JWT_COOKIE_CSRF_PROTECT'] = True  # Enable CSRF protection on JWT cookies
+app.config['JWT_ACCESS_COOKIE_PATH'] = '/'  # Cookie path
+app.config['JWT_COOKIE_SECURE'] = os.getenv('FLASK_ENV') == 'production'  # Use secure cookies in production
+app.config['JWT_COOKIE_SAMESITE'] = 'Lax'  # SameSite can be 'Lax', 'Strict', or 'None'
+
 app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL', 'sqlite:///:memory:')  # In-memory DB for testing
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
@@ -61,8 +67,12 @@ def login():
     user = User.query.filter_by(username=data['username']).first()
 
     if user and bcrypt.checkpw(data['password'].encode('utf-8'), user.password.encode('utf-8')):
-        token = create_access_token(identity={'username': user.username})
-        return jsonify(token=token)
+        access_token = create_access_token(identity={'username': user.username})
+
+        # Set JWT in a cookie
+        response = make_response(jsonify(message="Login successful"))
+        set_access_cookies(response, access_token)
+        return response
     return jsonify(message="Invalid credentials"), 401
 
 @app.route('/profile', methods=['GET'])
@@ -70,6 +80,12 @@ def login():
 def profile():
     current_user = get_jwt_identity()
     return jsonify(logged_in_as=current_user), 200
+
+@app.route('/logout', methods=['POST'])
+def logout():
+    response = make_response(jsonify(message="Logged out"))
+    unset_jwt_cookies(response)  # Unset JWT cookies on logout
+    return response
 
 if __name__ == '__main__':
     app.run(port=3001)

@@ -1,6 +1,6 @@
 import pytest
 import sys
-sys.path.append("src")  
+sys.path.append("src")
 
 from app.user_service import app, db  # Update the import path
 import os
@@ -28,7 +28,24 @@ def test_register(client):
     assert response.status_code == 201
 
 def test_login(client):
+    # Register user
     client.post('/register', json={'username': 'john', 'password': os.getenv('TEST_USER_PASSWORD', 'test123')})
+    
+    # Login user and check if the JWT is set in cookies
     response = client.post('/login', json={'username': 'john', 'password': os.getenv('TEST_USER_PASSWORD', 'test123')})
     assert response.status_code == 200
-    assert 'token' in response.json
+    assert 'Set-Cookie' in response.headers  # Check if JWT is set in cookies
+
+def test_profile(client):
+    # Register and login user
+    client.post('/register', json={'username': 'john', 'password': os.getenv('TEST_USER_PASSWORD', 'test123')})
+    login_response = client.post('/login', json={'username': 'john', 'password': os.getenv('TEST_USER_PASSWORD', 'test123')})
+    
+    # Extract JWT from cookies
+    access_cookie = login_response.headers.get('Set-Cookie')
+    assert access_cookie is not None  # Ensure that the cookie was set
+    
+    # Send request to protected route with cookie
+    profile_response = client.get('/profile', headers={'Cookie': access_cookie})
+    assert profile_response.status_code == 200
+    assert profile_response.json['logged_in_as']['username'] == 'john'
