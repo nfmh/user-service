@@ -29,7 +29,6 @@ jobs:
         echo "PYTHONPATH=$GITHUB_WORKSPACE/src" >> $GITHUB_ENV  # Ensure PYTHONPATH is set correctly
         echo "ALLOWED_ORIGINS=http://localhost:3000" >> $GITHUB_ENV
 
-
     - name: Install Dependencies (Flask, SQLAlchemy, JWT, bcrypt, CORS, pytest, pytest-cov, Flask-WTF)
       run: |
         pip install Flask flask_sqlalchemy flask_jwt_extended bcrypt flask_cors flask_wtf bandit pytest pytest-cov
@@ -61,15 +60,9 @@ jobs:
 
     # Trivy scan step
     - name: Run Trivy vulnerability scan
-      id: trivy
       uses: aquasecurity/trivy-action@master
       with:
         image-ref: user-service:vulnerable
         format: 'table'
         severity: 'HIGH,CRITICAL'
-        fail-on-severity: 'HIGH,CRITICAL'
-
-    # Add a step to fail the build if Trivy finds vulnerabilities
-    - name: Fail if vulnerabilities are found
-      if: steps.trivy.outcome == 'failure'
-      run: exit 1
+        exit-code: '1'  # Trivy will fail the build with code 1 if vulnerabilities are found
