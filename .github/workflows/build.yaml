@@ -61,8 +61,16 @@ jobs:
 
     # Trivy scan step
     - name: Run Trivy vulnerability scan
+      id: trivy
       uses: aquasecurity/trivy-action@master
       with:
         image-ref: user-service:vulnerable
         format: 'table'
         severity: 'HIGH,CRITICAL'
+        exit-code: '1'  # Trivy will exit with code 1 if vulnerabilities are found
+
+    # Add a step to check the exit code from Trivy scan
+    - name: Fail if vulnerabilities are found
+      if: steps.trivy.outcome == 'failure'
+      run: exit 1
+
