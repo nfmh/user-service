@@ -1,8 +1,10 @@
 import pytest
 import os
 from app import create_app, db
-from app.models import User  # Import the User model
+from app.models import Quote, Song, Movement, Mood
+from flask_jwt_extended import create_access_token
 from dotenv import load_dotenv
+
 
 @pytest.fixture
 def client():
@@ -28,48 +30,90 @@ def client():
     with app.app_context():
         db.drop_all()
 
-def test_register(client):
-    response = client.post('/register', json={'username': 'john', 'password': os.getenv('TEST_USER_PASSWORD', 'test123')})
+def mock_jwt_token(app):
+    """ Helper function to generate a mock JWT token. """
+    with app.app_context():
+        # Generate a JWT token using Flask-JWT-Extended
+        access_token = create_access_token(identity={'username': 'john'})
+        return access_token
+
+# Test adding a new song
+def test_add_song(client, app):
+    # Generate JWT token
+    jwt_token = mock_jwt_token(app)
+
+    # Set the JWT token as a cookie
+    client.set_cookie('localhost', 'access_token_cookie', jwt_token)
+
+    # Add a new song with mood 'happy'
+    data = {
+        'mood': 'happy',
+        'title': 'Happy Song',
+        'url': 'https://happy-song-url.com'
+    }
+    response = client.post('/song', json=data)
     assert response.status_code == 201
+    assert response.json['message'] == "Added new song"
 
-def test_login(client):
-    # Register user
-    client.post('/register', json={'username': 'john', 'password': os.getenv('TEST_USER_PASSWORD', 'test123')})
-    
-    # Login user and check if the JWT is set in cookies
-    response = client.post('/login', json={'username': 'john', 'password': os.getenv('TEST_USER_PASSWORD', 'test123')})
+# Test retrieving mood info
+def test_get_mood_info(client, app):
+    # Generate JWT token
+    jwt_token = mock_jwt_token(app)
+
+    # Set the JWT token as a cookie
+    client.set_cookie('localhost', 'access_token_cookie', jwt_token)
+
+    # Test retrieving mood info for 'happy'
+    data = {'mood': 'happy'}
+    response = client.post('/mood', json=data)
     assert response.status_code == 200
-    assert 'Set-Cookie' in response.headers  # Check if JWT is set in cookies
+    assert 'quote' in response.json
+    assert 'songs' in response.json
+    assert 'image_url' in response.json
 
-def test_profile(client):
-    # Register and login user
-    client.post('/register', json={'username': 'john', 'password': os.getenv('TEST_USER_PASSWORD', 'test123')})
-    login_response = client.post('/login', json={'username': 'john', 'password': os.getenv('TEST_USER_PASSWORD', 'test123')})
-    
-    # Extract JWT from cookies
-    access_cookie = login_response.headers.get('Set-Cookie')
-    assert access_cookie is not None  # Ensure that the cookie was set
-    
-    # Send request to protected route with cookie
-    profile_response = client.get('/profile', headers={'Cookie': access_cookie})
-    assert profile_response.status_code == 200
-    assert profile_response.json['logged_in_as']['username'] == 'john'
+# Test adding song with missing data
+def test_add_song_missing_data(client, app):
+    # Generate JWT token
+    jwt_token = mock_jwt_token(app)
 
-# Additional Tests
+    # Set the JWT token as a cookie
+    client.set_cookie('localhost', 'access_token_cookie', jwt_token)
 
-def test_invalid_register(client):
-    # Register a user
-    client.post('/register', json={'username': 'john', 'password': os.getenv('TEST_USER_PASSWORD', 'test123')})
-    
-    # Attempt to register with the same username again
-    response = client.post('/register', json={'username': 'john', 'password': 'newpassword'})
-    assert response.status_code == 400  # Expect 400 since the user already exists
-    assert response.json['message'] == "User already exists"
+    data = {
+        'mood': 'happy',
+        'title': 'Incomplete Song'
+        # Missing URL
+    }
+    response = client.post('/song', json=data)
+    assert response.status_code == 400
+    assert response.json['message'] == "Missing data"
 
-def test_invalid_login(client):
-    # Register a user
-    client.post('/register', json={'username': 'john', 'password': os.getenv('TEST_USER_PASSWORD', 'test123')})
-    
-    # Attempt to login with wrong password
-    response = client.post('/login', json={'username': 'john', 'password': 'wrongpassword'})
-    assert response.status_code == 401  # Invalid credentials
+# Test retrieving mood info for non-existent mood
+def test_get_invalid_mood_info(client, app):
+    # Generate JWT token
+    jwt_token = mock_jwt_token(app)
+
+    # Set the JWT token as a cookie
+    client.set_cookie('localhost', 'access_token_cookie', jwt_token)
+
+    data = {'mood': 'non_existent_mood'}
+    response = client.post('/mood', json=data)
+    assert response.status_code == 404
+    assert response.json['message'] == "Mood not found"
+
+# Test adding a song for a non-existent mood
+def test_add_song_invalid_mood(client, app):
+    # Generate JWT token
+    jwt_token = mock_jwt_token(app)
+
+    # Set the JWT token as a cookie
+    client.set_cookie('localhost', 'access_token_cookie', jwt_token)
+
+    data = {
+        'mood': 'non_existent_mood',
+        'title': 'Song with Invalid Mood',
+        'url': 'https://invalid-mood-song.com'
+    }
+    response = client.post('/song', json=data)
+    assert response.status_code == 404
+    assert response.json['message'] == "Mood not found"
