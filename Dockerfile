@@ -32,8 +32,9 @@ COPY . /user-service
 # Upgrade pip and setuptools to latest secure versions
 RUN pip install --upgrade pip setuptools==70.0.0
 
-# Install the latest secure dependencies
-RUN pip install --no-cache-dir Flask==2.3.3 SQLAlchemy==2.0.21 flask-jwt-extended==4.4.4 Flask-WTF==1.0.1 python-dotenv==1.0.0 flask-cors==4.0.2
+# Install the dependencies from requirements.txt
+COPY requirements.txt /user-service/requirements.txt
+RUN pip install --no-cache-dir -r requirements.txt
 
 # Expose the app port
 EXPOSE 3001

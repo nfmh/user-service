@@ -24,10 +24,15 @@ jobs:
       with:
         python-version: '3.12'
 
-    # Install Dependencies (including python-dotenv)
-    - name: Install Dependencies (Flask, SQLAlchemy, JWT, bcrypt, CORS, pytest, pytest-cov, Flask-WTF, python-dotenv)
+    # Install Dependencies from requirements.txt
+    - name: Install Core Dependencies
       run: |
-        pip install Flask flask_sqlalchemy flask_jwt_extended bcrypt flask_cors flask_wtf bandit pytest pytest-cov python-dotenv psycopg2
+        pip install -r requirements.txt
+
+    # Install Testing and Security Dependencies
+    - name: Install Additional Testing Dependencies (pytest, bandit, etc.)
+      run: |
+        pip install pytest pytest-cov bandit
 
      # Set PYTHONPATH to ensure the app module can be found
     - name: Set PYTHONPATH
@@ -62,7 +67,7 @@ jobs:
           -Dsonar.python.coverage.reportPaths=coverage-reports/coverage.xml
           -Dsonar.python.version=3.12
 
-     #Login to GCP and authenticate with docker in order to push images
+    #Login to GCP and authenticate with docker in order to push images
     - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v3
     
