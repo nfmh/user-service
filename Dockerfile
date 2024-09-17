@@ -4,7 +4,7 @@ FROM python:3.12-alpine
 # Set environment variables
 ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
-ENV FLASK_APP app:create_app  # This points to your create_app function in app/__init__.py
+ENV FLASK_APP=src.app:create_app
 
 # Working directory
 WORKDIR /user-service
