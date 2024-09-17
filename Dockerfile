@@ -16,6 +16,15 @@ RUN apk update && apk add --no-cache \
     postgresql-dev \
     build-base
 
+# Create a non-root user and group with a fixed UID and GID
+RUN addgroup -g 1001 -S appgroup && adduser -u 1001 -S appuser -G appgroup
+
+# Set permissions on the working directory
+RUN chown -R appuser:appgroup /user-service
+
+# Switch to the non-root user
+USER appuser
+
 # Copy the current directory contents into the container
 COPY . /user-service
 
