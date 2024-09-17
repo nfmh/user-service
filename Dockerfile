@@ -4,7 +4,8 @@ FROM python:3.12-alpine
 # Set environment variables
 ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
-ENV FLASK_APP=src.app:create_app
+ENV FLASK_APP=app:create_app
+ENV PYTHONPATH=/user-service/src
 
 # Working directory
 WORKDIR /user-service
