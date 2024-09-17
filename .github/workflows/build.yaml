@@ -1,0 +1,108 @@
+name: Build Pipeline
+
+on:
+  push:
+    branches:
+      - main
+      - 'feature/**'
+
+jobs:
+  build_pipeline:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: 'read'
+      id-token: 'write'
+
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+      # Add permission for the GCP auth step
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.12'
+
+    # Install Dependencies (including python-dotenv)
+    - name: Install Dependencies (Flask, SQLAlchemy, JWT, bcrypt, CORS, pytest, pytest-cov, Flask-WTF, python-dotenv)
+      run: |
+        pip install Flask flask_sqlalchemy flask_jwt_extended bcrypt flask_cors flask_wtf bandit pytest pytest-cov python-dotenv psycopg2
+
+     # Set PYTHONPATH to ensure the app module can be found
+    - name: Set PYTHONPATH
+      run: |
+        echo "PYTHONPATH=$GITHUB_WORKSPACE/src" >> $GITHUB_ENV
+
+    # Load environment variables from .env file
+    - name: Load .env file
+      run: |
+        if [ -f .env ]; then
+          export $(cat .env | grep -v '^#' | xargs)
+        fi
+
+    # Step 1: Run Unit Tests with Coverage
+    - name: Run Unit Tests with Coverage
+      run: |
+        pytest --cov=src/app --cov=src/services --cov-report=xml:coverage-reports/coverage.xml --cov-report=html:coverage-reports/htmlcov
+        # Post-process the coverage report to fix paths
+        sed -i 's|/home/runner/work/user-service/user-service/||g' coverage-reports/coverage.xml  # Remove absolute paths
+
+    # Step 2: Upload Coverage to SonarCloud
+    - name: SonarCloud Scan
+      uses: SonarSource/sonarcloud-github-action@master
+      env:
+        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }} 
+      with:
+        args: >
+          -Dsonar.projectKey=nfmh_user-service
+          -Dsonar.organization=nfmh
+          -Dsonar.sources=src/app,src/services
+          -Dsonar.tests=src/tests
+          -Dsonar.python.coverage.reportPaths=coverage-reports/coverage.xml
+          -Dsonar.python.version=3.12
+
+     #Login to GCP and authenticate with docker in order to push images
+    - uses: actions/checkout@v4
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+    
+    - id: auth
+      name: Authenticate to Google Cloud
+      uses: google-github-actions/auth@v2
+      with:
+        workload_identity_provider: "projects/576501498801/locations/global/workloadIdentityPools/github-wi-pool/providers/github-provider"
+        service_account: "artifact-registry@corded-epigram-435910-d5.iam.gserviceaccount.com"
+        token_format: 'access_token'
+    
+    - uses: docker/login-action@v3
+      with:
+        registry: 'europe-west3-docker.pkg.dev'
+        username: 'oauth2accesstoken'
+        password: '${{ steps.auth.outputs.access_token }}'
+        
+
+    - name: Set DateTime as IMAGE_TAG
+      id: datetime
+      run: echo "DATETIME=$(date '+%Y%m%d%H%M%S')" >> $GITHUB_OUTPUT
+
+    - name: Build Docker image
+      id: build-image
+      run: |
+        IMAGE_TAG=prod.${{ steps.datetime.outputs.DATETIME }}
+        docker build -t "${{ secrets.REGISTRY_NAME }}:${IMAGE_TAG}" -f Dockerfile .
+        echo "IMAGE_NAME=${{ secrets.REGISTRY_NAME }}:${IMAGE_TAG}" >> $GITHUB_OUTPUT
+
+    # Trivy scan step
+    - name: Run Trivy vulnerability scan
+      uses: aquasecurity/trivy-action@master
+      with:
+        image-ref: "${{ steps.build-image.outputs.IMAGE_NAME }}"
+        format: 'table'
+        severity: 'HIGH,CRITICAL'
+        exit-code: '1'  # Trivy will fail the build with code 1 if vulnerabilities are found
+ 
+      # Publish the Docker Image to GCP
+    - name: Push Docker image to Artifact registry
+      run: |
+        docker push "${{ steps.build-image.outputs.IMAGE_NAME }}"
