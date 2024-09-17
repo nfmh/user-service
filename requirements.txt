@@ -3,7 +3,7 @@ SQLAlchemy
 flask-jwt-extended
 Flask-WTF
 python-dotenv
-flask-cors=
-bcrypt=
+flask-cors
+bcrypt
 psycopg2
 flask_sqlalchemy
