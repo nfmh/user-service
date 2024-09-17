@@ -63,7 +63,6 @@ jobs:
           -Dsonar.python.version=3.12
 
      #Login to GCP and authenticate with docker in order to push images
-    - uses: actions/checkout@v4
     - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v3
     
