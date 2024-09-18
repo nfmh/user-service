@@ -37,8 +37,11 @@ RUN pip install --upgrade pip setuptools==70.0.0
 COPY requirements.txt /user-service/requirements.txt
 RUN pip install --no-cache-dir -r requirements.txt
 
+# Expose the app port
+EXPOSE 3001
+
 # Install Gunicorn
 RUN pip install gunicorn
 
 # Use Gunicorn as the WSGI server
-CMD ["gunicorn", "--bind", "0.0.0.0:3002", "app:create_app"]
+CMD ["gunicorn", "--bind", "0.0.0.0:3001", "app:create_app"]
