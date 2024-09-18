@@ -18,6 +18,10 @@ RUN apk update && apk add --no-cache \
     postgresql-dev \
     build-base
 
+# Install Gunicorn before switching users
+RUN pip install --upgrade pip setuptools==70.0.0
+RUN pip install gunicorn
+
 # Create a non-root user and group with a fixed UID and GID
 RUN addgroup -g 1001 -S appgroup && adduser -u 1001 -S appuser -G appgroup
 
@@ -30,18 +34,12 @@ USER appuser
 # Copy the current directory contents into the container
 COPY . /user-service
 
-# Upgrade pip and setuptools to latest secure versions
-RUN pip install --upgrade pip setuptools==70.0.0
-
 # Install the dependencies from requirements.txt
 COPY requirements.txt /user-service/requirements.txt
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Expose the app port
 EXPOSE 3001
-
-# Install Gunicorn
-RUN pip install gunicorn
 
 # Use Gunicorn as the WSGI server
 CMD ["gunicorn", "--bind", "0.0.0.0:3001", "app:create_app"]
