@@ -20,10 +20,10 @@ def create_app():
     # Application configurations
     app.config['JWT_SECRET_KEY'] = os.getenv('JWT_SECRET_KEY')  
     app.config['JWT_TOKEN_LOCATION'] = ['cookies']
-    app.config['JWT_COOKIE_CSRF_PROTECT'] = False
+    app.config['JWT_COOKIE_CSRF_PROTECT'] = True
     app.config['JWT_ACCESS_COOKIE_PATH'] = '/'
-    app.config['JWT_COOKIE_SECURE'] = False
-    app.config['JWT_COOKIE_SAMESITE'] = 'None'
+    app.config['JWT_COOKIE_SECURE'] = True
+    app.config['JWT_COOKIE_SAMESITE'] = 'Lax'
     app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL')
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
@@ -37,7 +37,7 @@ def create_app():
     
     # CORS setup
     if os.getenv('FLASK_ENV') == 'production':
-        CORS(app, resources={r"/*": {"origins": "http://35.242.246.158"}})
+        CORS(app, resources={r"/*": {"origins": "https://moodtunes.nfmh.com"}})
     else:
         allowed_origins = os.getenv('ALLOWED_ORIGINS', '*')
         CORS(app, resources={r"/*": {"origins": allowed_origins}})
