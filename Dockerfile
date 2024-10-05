@@ -42,4 +42,4 @@ RUN pip install --no-cache-dir -r requirements.txt
 EXPOSE 3001
 
 # Use Gunicorn as the WSGI server
-CMD ["gunicorn", "--bind", "0.0.0.0:3001", "app:create_app"]
+CMD ["gunicorn", "--bind", "0.0.0.0:3001", "wsgi:app"]
