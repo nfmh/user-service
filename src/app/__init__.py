@@ -4,6 +4,7 @@ from flask_jwt_extended import JWTManager
 from flask_wtf.csrf import CSRFProtect
 from flask_cors import CORS
 import os
+from flask import request
 
 # Initialize extensions
 db = SQLAlchemy()
