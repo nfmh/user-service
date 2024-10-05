@@ -2,11 +2,11 @@
 FROM python:3.12-alpine
 
 # Set environment variables
-ENV PYTHONDONTWRITEBYTECODE 1
-ENV PYTHONUNBUFFERED 1
+ENV PYTHONDONTWRITEBYTECODE=1
+ENV PYTHONUNBUFFERED=1
 ENV FLASK_APP=app:create_app
 ENV PYTHONPATH=/user-service/src
-ENV PATH="/home/appuser/.local/bin:$PATH"  # Add this to include local binaries
+ENV PATH="/home/appuser/.local/bin:$PATH"  # Include local binaries in PATH
 
 # Working directory
 WORKDIR /user-service
@@ -19,9 +19,9 @@ RUN apk update && apk add --no-cache \
     postgresql-dev \
     build-base
 
-# Install Gunicorn before switching users
+# Install Gunicorn and Flask before switching users
 RUN pip install --upgrade pip setuptools==70.0.0
-RUN pip install gunicorn
+RUN pip install gunicorn flask
 
 # Create a non-root user and group with a fixed UID and GID
 RUN addgroup -g 1001 -S appgroup && adduser -u 1001 -S appuser -G appgroup
@@ -39,8 +39,8 @@ COPY . /user-service
 COPY requirements.txt /user-service/requirements.txt
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Run database migrations
-RUN flask db upgrade
+# Run database migration using full path to ensure `flask` is found
+RUN /home/appuser/.local/bin/flask db upgrade
 
 # Expose the app port
 EXPOSE 3001
