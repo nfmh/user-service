@@ -21,6 +21,8 @@ RUN apk update && apk add --no-cache \
 # Install Gunicorn before switching users
 RUN pip install --upgrade pip setuptools==70.0.0
 RUN pip install gunicorn
+RUN flask db upgrade
+
 
 # Create a non-root user and group with a fixed UID and GID
 RUN addgroup -g 1001 -S appgroup && adduser -u 1001 -S appuser -G appgroup
@@ -42,4 +44,4 @@ RUN pip install --no-cache-dir -r requirements.txt
 EXPOSE 3001
 
 # Use Gunicorn as the WSGI server
-CMD ["gunicorn", "--bind", "0.0.0.0:3001", "wsgi:app"]
+CMD ["gunicorn", "--bind", "0.0.0.0:3001", "--log-level", "debug", "wsgi:app"]
