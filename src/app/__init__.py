@@ -34,19 +34,20 @@ def create_app():
     app.config['TESTING'] = os.getenv('FLASK_ENV') == 'testing'
     if not app.config['TESTING']:
         csrf.init_app(app)
-    
+
     # Print the SQLALCHEMY_DATABASE_URI to ensure it's using the right one
     print(f"Using Database URI: {app.config['SQLALCHEMY_DATABASE_URI']}")
 
     # Disable CSRF protection for JSON requests or internal communication
-      def disable_csrf_for_internal_or_json_requests():
+    @app.before_request
+    def disable_csrf_for_internal_or_json_requests():
         if request.headers.get('X-Internal-Request', False) or request.content_type == 'application/json':
             app.config['WTF_CSRF_ENABLED'] = False  # Disable CSRF for these requests
-            
+
     # Initialize extensions with the app
     db.init_app(app)
     jwt.init_app(app)
-    
+
     # CORS setup
     if os.getenv('FLASK_ENV') == 'production':
         CORS(app, resources={r"/*": {"origins": "https://app.nfmh.solutions"}})
