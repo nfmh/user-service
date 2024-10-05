@@ -6,6 +6,7 @@ ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
 ENV FLASK_APP=app:create_app
 ENV PYTHONPATH=/user-service/src
+ENV PATH="/home/appuser/.local/bin:$PATH"  # Add this to include local binaries
 
 # Working directory
 WORKDIR /user-service
@@ -22,8 +23,6 @@ RUN apk update && apk add --no-cache \
 RUN pip install --upgrade pip setuptools==70.0.0
 RUN pip install gunicorn
 
-
-
 # Create a non-root user and group with a fixed UID and GID
 RUN addgroup -g 1001 -S appgroup && adduser -u 1001 -S appuser -G appgroup
 
@@ -39,6 +38,8 @@ COPY . /user-service
 # Install the dependencies from requirements.txt
 COPY requirements.txt /user-service/requirements.txt
 RUN pip install --no-cache-dir -r requirements.txt
+
+# Run database migrations
 RUN flask db upgrade
 
 # Expose the app port
