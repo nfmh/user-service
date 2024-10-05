@@ -42,6 +42,15 @@ def create_app():
         # You can customize this check based on internal IP addresses or headers
         if request.headers.get('X-Internal-Request', False):  
             csrf.protect = False  # Disable CSRF for this request
+    
+    from flask import request
+
+    # Disable CSRF protection for routes with 'application/json' content-type
+    @app.before_request
+    def disable_csrf_for_api():
+        if request.content_type == 'application/json':
+            csrf.protect = False
+
 
     # Initialize extensions with the app
     db.init_app(app)
