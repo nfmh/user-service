@@ -1,7 +1,7 @@
-from flask import Flask
+from flask import Flask, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from flask_jwt_extended import JWTManager
-from flask_wtf.csrf import CSRFProtect
+from flask_wtf.csrf import CSRFProtect, csrf_exempt
 from flask_cors import CORS
 import os
 from flask import request
@@ -28,29 +28,21 @@ def create_app():
     app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL')
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
-     # ** CSRF Protection Key **
+    # ** CSRF Protection Key **
     app.config['SECRET_KEY'] = os.getenv('CSRF_SECRET_KEY')
 
     app.config['TESTING'] = os.getenv('FLASK_ENV') == 'testing'
     if not app.config['TESTING']:
         csrf.init_app(app)
+    
     # Print the SQLALCHEMY_DATABASE_URI to ensure it's using the right one
     print(f"Using Database URI: {app.config['SQLALCHEMY_DATABASE_URI']}")
-    # Disable CSRF for internal service-to-service communication
-    @app.before_request
-    def disable_csrf_for_internal_requests():
-        # You can customize this check based on internal IP addresses or headers
-        if request.headers.get('X-Internal-Request', False):  
-            csrf.protect = False  # Disable CSRF for this request
     
-    from flask import request
-
-    # Disable CSRF protection for routes with 'application/json' content-type
+    # Disable CSRF protection for JSON requests or internal communication
     @app.before_request
-    def disable_csrf_for_api():
+    def disable_csrf_for_json_requests():
         if request.content_type == 'application/json':
-            csrf.protect = False
-
+            csrf.exempt(request.endpoint)  # Exempt CSRF for API calls
 
     # Initialize extensions with the app
     db.init_app(app)
