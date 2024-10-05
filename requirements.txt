@@ -7,3 +7,4 @@ flask-cors
 bcrypt
 psycopg2
 flask_sqlalchemy
+Flask-Migrate   # Add this
