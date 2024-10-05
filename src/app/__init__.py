@@ -43,6 +43,7 @@ def create_app():
     def disable_csrf_for_json_requests():
         if request.content_type == 'application/json':
             app.config['WTF_CSRF_ENABLED'] = False  # Disable CSRF for JSON requests
+            csrf.exempt(request.endpoint)
         if request.headers.get('X-Internal-Request', False):
             app.config['WTF_CSRF_ENABLED'] = False  # Disable CSRF for internal requests
 
