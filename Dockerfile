@@ -6,7 +6,7 @@ ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
 ENV FLASK_APP=app:create_app
 ENV PYTHONPATH=/user-service/src
-ENV PATH="/home/appuser/.local/bin:$PATH"  # Include local binaries in PATH
+ENV PATH="/home/appuser/.local/bin:$PATH" 
 
 # Working directory
 WORKDIR /user-service
