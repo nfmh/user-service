@@ -1,7 +1,7 @@
 from flask import Flask, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from flask_jwt_extended import JWTManager
-from flask_wtf.csrf import CSRFProtect, csrf_exempt
+from flask_wtf.csrf import CSRFProtect
 from flask_cors import CORS
 import os
 from flask import request
