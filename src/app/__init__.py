@@ -32,7 +32,7 @@ def create_app():
     if not app.config['TESTING']:
         csrf.init_app(app)
     # Print the SQLALCHEMY_DATABASE_URI to ensure it's using the right one
-    print(f"Using Database URI: {os.getenv('DATABASE_URL')}")
+    print(f"Using Database URI: {app.config['SQLALCHEMY_DATABASE_URI']}")
     # Disable CSRF for internal service-to-service communication
     @app.before_request
     def disable_csrf_for_internal_requests():
