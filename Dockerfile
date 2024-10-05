@@ -19,7 +19,7 @@ RUN apk update && apk add --no-cache \
     build-base \
     tcpdump \
     curl \
-    telnet \
+    busybox-extras \
     iputils
 
 # Install Gunicorn before switching users
