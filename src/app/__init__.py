@@ -1,7 +1,7 @@
 from flask import Flask, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from flask_jwt_extended import JWTManager
-from flask_wtf.csrf import CSRFProtect
+from flask_wtf.csrf import CSRFProtect, csrf_exempt
 from flask_cors import CORS
 import os
 from flask import request
@@ -40,9 +40,11 @@ def create_app():
 
     # Disable CSRF protection for JSON requests or internal communication
     @app.before_request
-    def disable_csrf_for_internal_or_json_requests():
-        if request.headers.get('X-Internal-Request', False) or request.content_type == 'application/json':
-            app.config['WTF_CSRF_ENABLED'] = False  # Disable CSRF for these requests
+    def disable_csrf_for_json_requests():
+        if request.content_type == 'application/json':
+            app.config['WTF_CSRF_ENABLED'] = False  # Disable CSRF for JSON requests
+        if request.headers.get('X-Internal-Request', False):
+            app.config['WTF_CSRF_ENABLED'] = False  # Disable CSRF for internal requests
 
     # Initialize extensions with the app
     db.init_app(app)
