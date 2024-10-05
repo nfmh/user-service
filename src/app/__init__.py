@@ -31,13 +31,20 @@ def create_app():
     if not app.config['TESTING']:
         csrf.init_app(app)
 
+    # Disable CSRF for internal service-to-service communication
+    @app.before_request
+    def disable_csrf_for_internal_requests():
+        # You can customize this check based on internal IP addresses or headers
+        if request.headers.get('X-Internal-Request', False):  
+            csrf.protect = False  # Disable CSRF for this request
+
     # Initialize extensions with the app
     db.init_app(app)
     jwt.init_app(app)
     
     # CORS setup
     if os.getenv('FLASK_ENV') == 'production':
-        CORS(app, resources={r"/*": {"origins": "https://moodtunes.nfmh.com"}})
+        CORS(app, resources={r"/*": {"origins": "https://app.nfmh.solutions"}})
     else:
         allowed_origins = os.getenv('ALLOWED_ORIGINS', '*')
         CORS(app, resources={r"/*": {"origins": allowed_origins}})
