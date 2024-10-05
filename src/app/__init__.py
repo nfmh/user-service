@@ -38,16 +38,12 @@ def create_app():
     # Print the SQLALCHEMY_DATABASE_URI to ensure it's using the right one
     print(f"Using Database URI: {app.config['SQLALCHEMY_DATABASE_URI']}")
 
-    # Disable CSRF protection for JSON requests or internal communication
-
-    if request.content_type == 'application/json':
-        app.config['WTF_CSRF_ENABLED'] = False  # Disable CSRF for JSON requests
-        app.config['WTF_CSRF_METHODS'] = []  # This is the magic
-        csrf.exempt(request.endpoint)
-    if request.headers.get('X-Internal-Request', False):
-        app.config['WTF_CSRF_ENABLED'] = False  # Disable CSRF for internal requests
-        app.config['WTF_CSRF_METHODS'] = []  # This is the magic
-
+    @app.before_request
+    def disable_csrf_for_json_requests():
+        if request.content_type == 'application/json':
+            csrf.exempt(request.endpoint)  # Exempt CSRF for API requests
+        if request.headers.get('X-Internal-Request', False):
+            csrf.exempt(request.endpoint)  # Exempt CSRF for internal service communication
     # Initialize extensions with the app
     db.init_app(app)
     jwt.init_app(app)
