@@ -40,9 +40,9 @@ def create_app():
 
     # Disable CSRF protection for JSON requests or internal communication
     @app.before_request
-    def disable_csrf_for_json_requests():
-         if request.headers.get('X-Internal-Request', False) or request.content_type == 'application/json':
-            csrf._disable = True  # Disable CSRF for JSON requests
+    def disable_csrf_for_internal_or_json_requests():
+        if request.headers.get('X-Internal-Request', False) or request.content_type == 'application/json':
+            csrf.protect = lambda: None  # Disable CSRF for internal or API requests
 
     # Initialize extensions with the app
     db.init_app(app)
@@ -60,4 +60,3 @@ def create_app():
     app.register_blueprint(user_service_blueprint)
 
     return app
-
