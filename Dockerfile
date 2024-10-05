@@ -21,7 +21,7 @@ RUN apk update && apk add --no-cache \
 # Install Gunicorn before switching users
 RUN pip install --upgrade pip setuptools==70.0.0
 RUN pip install gunicorn
-RUN flask db upgrade
+
 
 
 # Create a non-root user and group with a fixed UID and GID
@@ -39,6 +39,7 @@ COPY . /user-service
 # Install the dependencies from requirements.txt
 COPY requirements.txt /user-service/requirements.txt
 RUN pip install --no-cache-dir -r requirements.txt
+RUN flask db upgrade
 
 # Expose the app port
 EXPOSE 3001
