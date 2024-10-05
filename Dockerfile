@@ -10,13 +10,17 @@ ENV PYTHONPATH=/user-service/src
 # Working directory
 WORKDIR /user-service
 
-# Install system dependencies
+# Install system dependencies, including network tools for diagnostics
 RUN apk update && apk add --no-cache \
     gcc \
     musl-dev \
     libffi-dev \
     postgresql-dev \
-    build-base
+    build-base \
+    tcpdump \
+    curl \
+    telnet \
+    iputils
 
 # Install Gunicorn before switching users
 RUN pip install --upgrade pip setuptools==70.0.0
