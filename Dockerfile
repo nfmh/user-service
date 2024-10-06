@@ -20,7 +20,8 @@ RUN apk update && apk add --no-cache \
     tcpdump \
     curl \
     busybox-extras \
-    iputils
+    iputils \
+    libcap  # Install libcap to provide setcap
 
 # Install Gunicorn before switching users
 RUN pip install --upgrade pip setuptools==70.0.0
