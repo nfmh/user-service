@@ -34,7 +34,7 @@ RUN addgroup -g 1001 -S appgroup && adduser -u 1001 -S appuser -G appgroup
 RUN chown -R appuser:appgroup /user-service
 
 # Grant necessary capabilities for network tools like tcpdump
-RUN setcap cap_net_raw,cap_net_admin=eip /usr/sbin/tcpdump
+RUN setcap cap_net_raw,cap_net_admin=eip /usr/bin/tcpdump  # Corrected path
 
 # Switch to the non-root user
 USER appuser
