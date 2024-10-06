@@ -43,7 +43,7 @@ def create_app():
     def get_csrf_token():
         token = generate_csrf()
         response = make_response({'csrf_token': token})
-        response.set_cookie('csrf_token', token)
+        response.set_cookie('csrf_token', token, httponly=False)  
         return response
 
     # Initialize extensions with the app
@@ -52,10 +52,10 @@ def create_app():
 
     # CORS setup
     if os.getenv('FLASK_ENV') == 'production':
-        CORS(app, resources={r"/*": {"origins": "https://app.nfmh.solutions"}})
+         CORS(app, resources={r"/*": {"origins": '*'}})
     else:
         allowed_origins = os.getenv('ALLOWED_ORIGINS', '*')
-        CORS(app, resources={r"/*": {"origins": allowed_origins}})
+        CORS(app, resources={r"/*": {"origins": '*'}})
 
     # Register blueprints
     from app.user_service import user_service_blueprint
