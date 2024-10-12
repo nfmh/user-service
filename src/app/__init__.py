@@ -53,7 +53,7 @@ def create_app():
     # CORS setup
     if os.getenv('FLASK_ENV') == 'production':
         allowed_origins = os.getenv('ALLOWED_ORIGINS')
-        CORS(app, resources={r"/*": {"origins": allowed_origins}})
+        CORS(app, supports_credentials=True, resources={r"/*": {"origins": os.getenv('ALLOWED_ORIGINS')}})
     else:
        
         CORS(app, resources={r"/*": {"origins": '*'}})
