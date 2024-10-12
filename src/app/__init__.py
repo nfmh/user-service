@@ -52,9 +52,10 @@ def create_app():
 
     # CORS setup
     if os.getenv('FLASK_ENV') == 'production':
-         CORS(app, resources={r"/*": {"origins": '*'}})
+        allowed_origins = os.getenv('ALLOWED_ORIGINS')
+        CORS(app, resources={r"/*": {"origins": allowed_origins}})
     else:
-        allowed_origins = os.getenv('ALLOWED_ORIGINS', '*')
+       
         CORS(app, resources={r"/*": {"origins": '*'}})
 
     # Register blueprints
