@@ -1,15 +1,21 @@
-from flask import Flask, jsonify
+from flask import Flask, jsonify, make_response
 from flask_sqlalchemy import SQLAlchemy
-from flask_jwt_extended import JWTManager
+from flask_jwt_extended import JWTManager, create_access_token, create_refresh_token, jwt_required, get_jwt_identity, set_access_cookies, set_refresh_cookies, unset_jwt_cookies
 from flask_wtf.csrf import CSRFProtect, generate_csrf
 from flask_cors import CORS
 import os
-from flask import request, make_response
+from datetime import timedelta
+import logging
+import bcrypt
 
 # Initialize extensions
 db = SQLAlchemy()
 jwt = JWTManager()
 csrf = CSRFProtect()
+
+# Configure logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 def create_app():
     app = Flask(__name__)
@@ -25,6 +31,7 @@ def create_app():
     app.config['JWT_ACCESS_COOKIE_PATH'] = '/'
     app.config['JWT_COOKIE_SECURE']  = True
     app.config['JWT_COOKIE_SAMESITE'] = 'None'  # Allows cross-origin usage while keeping security
+    app.config['JWT_ACCESS_TOKEN_EXPIRES'] = timedelta(hours=1)  # Expiry for access tokens
     app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL')
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
@@ -55,7 +62,6 @@ def create_app():
         allowed_origins = os.getenv('ALLOWED_ORIGINS')
         CORS(app, supports_credentials=True, resources={r"/*": {"origins": os.getenv('ALLOWED_ORIGINS')}})
     else:
-       
         CORS(app, resources={r"/*": {"origins": '*'}})
 
     # Register blueprints
