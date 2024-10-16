@@ -27,7 +27,7 @@ def create_app():
     # Application configurations
     app.config['JWT_SECRET_KEY'] = os.getenv('JWT_SECRET_KEY')  
     app.config['JWT_TOKEN_LOCATION'] = ['cookies']
-    app.config['JWT_COOKIE_CSRF_PROTECT'] = False
+    app.config['JWT_COOKIE_CSRF_PROTECT'] = True
     app.config['JWT_ACCESS_COOKIE_PATH'] = '/'
     app.config['JWT_COOKIE_SECURE'] = True
     app.config['JWT_COOKIE_SAMESITE'] = 'None'
