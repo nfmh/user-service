@@ -50,7 +50,7 @@ def create_app():
     def get_csrf_token():
         token = generate_csrf()
         response = make_response({'csrf_token': token})
-        response.set_cookie('csrf_token', token, secure=True, samesite='None')
+        response.set_cookie('csrf_token', token, HttpOnly=True, secure=True, samesite='None')
         return response
 
     # Initialize extensions with the app
