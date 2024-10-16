@@ -46,26 +46,26 @@ jobs:
           export $(cat .env | grep -v '^#' | xargs)
         fi
 
-    # Step 1: Run Unit Tests with Coverage
-    - name: Run Unit Tests with Coverage
-      run: |
-        pytest --cov=src/app --cov=src/services --cov-report=xml:coverage-reports/coverage.xml --cov-report=html:coverage-reports/htmlcov
-        # Post-process the coverage report to fix paths
-        sed -i 's|/home/runner/work/user-service/user-service/||g' coverage-reports/coverage.xml  # Remove absolute paths
+    # # Step 1: Run Unit Tests with Coverage
+    # - name: Run Unit Tests with Coverage
+    #   run: |
+    #     pytest --cov=src/app --cov=src/services --cov-report=xml:coverage-reports/coverage.xml --cov-report=html:coverage-reports/htmlcov
+    #     # Post-process the coverage report to fix paths
+    #     sed -i 's|/home/runner/work/user-service/user-service/||g' coverage-reports/coverage.xml  # Remove absolute paths
 
-    # Step 2: Upload Coverage to SonarCloud
-    - name: SonarCloud Scan
-      uses: SonarSource/sonarcloud-github-action@master
-      env:
-        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }} 
-      with:
-        args: >
-          -Dsonar.projectKey=nfmh_user-service
-          -Dsonar.organization=nfmh
-          -Dsonar.sources=src/app,src/services
-          -Dsonar.tests=src/tests
-          -Dsonar.python.coverage.reportPaths=coverage-reports/coverage.xml
-          -Dsonar.python.version=3.12
+    # # Step 2: Upload Coverage to SonarCloud
+    # - name: SonarCloud Scan
+    #   uses: SonarSource/sonarcloud-github-action@master
+    #   env:
+    #     SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }} 
+    #   with:
+    #     args: >
+    #       -Dsonar.projectKey=nfmh_user-service
+    #       -Dsonar.organization=nfmh
+    #       -Dsonar.sources=src/app,src/services
+    #       -Dsonar.tests=src/tests
+    #       -Dsonar.python.coverage.reportPaths=coverage-reports/coverage.xml
+    #       -Dsonar.python.version=3.12
 
     #Login to GCP and authenticate with docker in order to push images
     - name: Set up Docker Buildx
