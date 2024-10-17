@@ -27,9 +27,9 @@ def create_app():
     # Application configurations
     app.config['JWT_SECRET_KEY'] = os.getenv('JWT_SECRET_KEY')  
     app.config['JWT_TOKEN_LOCATION'] = ['cookies']
-    app.config['JWT_COOKIE_CSRF_PROTECT'] = True
+    app.config['JWT_COOKIE_CSRF_PROTECT'] = False
     app.config['JWT_ACCESS_COOKIE_PATH'] = '/'
-    app.config['JWT_COOKIE_SECURE'] = True
+    app.config['JWT_COOKIE_SECURE'] = False
     app.config['JWT_COOKIE_SAMESITE'] = 'None'
     app.config['JWT_ACCESS_TOKEN_EXPIRES'] = timedelta(hours=1)  # Expiry for access tokens
     app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL')
@@ -50,7 +50,7 @@ def create_app():
     def get_csrf_token():
         token = generate_csrf()
         response = make_response({'csrf_token': token})
-        response.set_cookie('csrf_token', token, httponly=False, secure=True, samesite='None')
+        response.set_cookie('csrf_token', token, httponly=False, samesite='None')
         return response
 
     # Initialize extensions with the app
