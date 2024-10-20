@@ -5,7 +5,9 @@ from flask_wtf.csrf import CSRFProtect, generate_csrf
 from flask_cors import CORS
 import os
 from datetime import timedelta
+import time
 import logging
+from flask import Flask, request, g
 import bcrypt
 
 # Initialize extensions
@@ -14,7 +16,8 @@ jwt = JWTManager()
 csrf = CSRFProtect()
 
 # Configure logging
-logging.basicConfig(level=logging.INFO)
+# Configure logging to stdout
+logging.basicConfig(level=logging.INFO, format='%(asctime)s %(message)s')
 logger = logging.getLogger(__name__)
 
 def create_app():
@@ -44,6 +47,20 @@ def create_app():
 
     # Print the SQLALCHEMY_DATABASE_URI to ensure it's using the right one
     print(f"Using Database URI: {app.config['SQLALCHEMY_DATABASE_URI']}")
+
+
+    # **Request Logging Middleware**
+    @app.before_request
+    def log_request_info():
+        g.start_time = time.time()
+        logger.info(f"Incoming {request.method} request to {request.path}")
+
+    @app.after_request
+    def log_response_info(response):
+        processing_time = time.time() - g.start_time
+        logger.info(f"Completed {request.method} request to {request.path} in {processing_time:.4f} seconds")
+        return response
+
 
     # Add route to return CSRF token
     @app.route('/csrf-token', methods=['GET'])
