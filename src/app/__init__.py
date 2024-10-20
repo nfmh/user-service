@@ -17,7 +17,7 @@ csrf = CSRFProtect()
 
 # Configure logging
 # Configure logging to stdout
-logging.basicConfig(level=logging.INFO, format='%(asctime)s %(message)s')
+logging.basicConfig(level=logging.INFO, format='%(asctime)s %(message)s', stream=sys.stdout)
 logger = logging.getLogger(__name__)
 
 def create_app():
